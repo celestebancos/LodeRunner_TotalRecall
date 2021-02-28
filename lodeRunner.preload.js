@@ -384,6 +384,9 @@ function preloadResource()
 		demoIconBitmap = new createjs.Bitmap(preload.getResult("demo")); //04/18/2015
 		demoIconObj = new demoIconClass(screenX1, screenY1, tileScale, demoIconBitmap);
 
+		mainMenuIconBitmapCopy = new createjs.Bitmap(preload.getResult("menu"));
+		mainMenuIconObjCopy = new mainMenuIconClassCopy(screenX1, screenY1, tileScale, mainMenuIconBitmapCopy);
+
 		soundOnIconBitmap = new createjs.Bitmap(preload.getResult("soundOn")); //04/18/2015
 		soundOffIconBitmap = new createjs.Bitmap(preload.getResult("soundOff"));
 		soundIconObj = new soundIconClass(screenX1, screenY1, tileScale, soundOnIconBitmap, soundOffIconBitmap);
