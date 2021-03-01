@@ -1138,6 +1138,8 @@ function menuIconEnable()
 		repeatActionIconObj.enable();
 		themeColorObj.enable();
 	} else {
+		shareMenuIconObj.enable();
+		linkIconObj.enable();
 		if(!editInNarrowScreen) themeColorObj.enable();
 	}
 	infoIconObj.enable();
@@ -1152,6 +1154,8 @@ function menuIconDisable(hidden)
 		selectIconObj.disable(hidden);
 	}
 	demoIconObj.disable(hidden);
+	shareMenuIconObj.disable(hidden);
+	linkIconObj.disable(hidden);
 	soundIconObj.disable(hidden);
 	infoIconObj.disable(hidden);
 	helpIconObj.disable(hidden);
