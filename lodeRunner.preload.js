@@ -21,6 +21,7 @@ var helpObj, helpBitmap, editHelpBitmap;
 var mainMenuIconBitmap, mainMenuIconObj;
 var selectIconBitmap, selectIconObj;
 var demoIconBitmap, demoIconObj;
+var shareMenuIconBitmap, shareMenuIconObj;
 var soundOnIconBitmap, soundOffIconBitmap, soundIconObj;
 var helpIconBitmap, helpIconObj;
 var infoObj, infoIconBitmap, infoIconObj;
@@ -203,7 +204,8 @@ function preloadResource()
 		{ src: "image/yes.png"+noCache,     id: "yes" },
 		{ src: "image/no.png"+noCache,      id: "no" },
 
-		{ src: "image/demo.png"+noCache,id: "demo" },
+		{ src: "image/demo.png"+noCache,	id: "demo" },
+		{ src: "image/share.png"+noCache,	id: "share" },
 		
 		{ src: "image/soundOn.png"+noCache,  id: "soundOn" },
 		{ src: "image/soundOff.png"+noCache, id: "soundOff" },
@@ -384,8 +386,8 @@ function preloadResource()
 		demoIconBitmap = new createjs.Bitmap(preload.getResult("demo")); //04/18/2015
 		demoIconObj = new demoIconClass(screenX1, screenY1, tileScale, demoIconBitmap);
 
-		mainMenuIconBitmapCopy = new createjs.Bitmap(preload.getResult("menu"));
-		mainMenuIconObjCopy = new mainMenuIconClassCopy(screenX1, screenY1, tileScale, mainMenuIconBitmapCopy);
+		shareMenuIconBitmap = new createjs.Bitmap(preload.getResult("share"));
+		shareMenuIconObj = new shareMenuIconClass(screenX1, screenY1, tileScale, shareMenuIconBitmap);
 
 		soundOnIconBitmap = new createjs.Bitmap(preload.getResult("soundOn")); //04/18/2015
 		soundOffIconBitmap = new createjs.Bitmap(preload.getResult("soundOff"));

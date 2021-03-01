@@ -487,7 +487,7 @@ function demoIconClass( _screenX1, _screenY1, _scale, _bitmap)
 	}
 }
 
-function mainMenuIconClassCopy( _screenX1, _screenY1, _scale, _mainMenuBitmap)
+function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 {
 	//_scale = _scale*2/3;
 	var border = 4 * _scale;
@@ -496,8 +496,8 @@ function mainMenuIconClassCopy( _screenX1, _screenY1, _scale, _mainMenuBitmap)
 	var saveStateObj;
 	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
 	
-	var bitmapX = _mainMenuBitmap.getBounds().width * _scale;
-	var bitmapY = _mainMenuBitmap.getBounds().height * _scale;	
+	var bitmapX = _bitmap.getBounds().width * _scale;
+	var bitmapY = _bitmap.getBounds().height * _scale;	
 	var self = this;
 	var enabled = 0;
 	
@@ -552,7 +552,7 @@ function mainMenuIconClassCopy( _screenX1, _screenY1, _scale, _mainMenuBitmap)
 	function createCanvas()
 	{
 		mainMainCanvas = document.createElement('canvas');
-		mainMainCanvas.id     = "main_menu";
+		mainMainCanvas.id     = "share_menu";
 		mainMainCanvas.width  = bitmapX+border*2;
 		mainMainCanvas.height = bitmapY+border*2;
 	
@@ -575,8 +575,8 @@ function mainMenuIconClassCopy( _screenX1, _screenY1, _scale, _mainMenuBitmap)
 			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
 		menuBG.alpha = 0;
 		menuIcon.addChild(menuBG);
-		_mainMenuBitmap.setTransform(border, border, _scale, _scale);
-		menuIcon.addChild(_mainMenuBitmap);
+		_bitmap.setTransform(border, border, _scale, _scale);
+		menuIcon.addChild(_bitmap);
 		
 		menuIcon.set({alpha:0})
 		stage.addChild(menuIcon);
