@@ -601,13 +601,176 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 	
 	function mouseClick()
 	{
-		alert("hi!")
 		if(gameState == GAME_PAUSE || //// demoDataLoading ||
 		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+
 		saveState();
+		const exportableLevelMap = testLevelInfo.levelMap;
+		const importedLevelMap = prompt("Here's the current level map." + 
+			"\nTo export this level, just copy the text below." + 
+			"\nTo import a different level, paste in it's level map.", exportableLevelMap);
+
+		testLevelInfo.levelMap = importedLevelMap;
+		testLevelInfo.pass = 0;
+		testLevelInfo.fromPlayData = -1;
+		testLevelInfo.fromLevel = -1;
+		//I need to figure out how to increase the edit level so the import doesn't overwrite an existing level
+		setTestLevel(testLevelInfo);
+		restoreState();
+		startEditMode();
+	}
+
+	function saveState()
+	{
+		saveStateObj = saveKeyHandler(noKeyDown);
+		gamePause();
+		if(playMode == PLAY_EDIT) {
+			if(editLevelModified()) saveTestState();
+			stopEditTicker();
+		} else {
+			stopPlayTicker();
+			stopAllSpriteObj();
+		}
+		self.disable();
+	}
+	
+	function restoreState()
+	{
+		restoreKeyHandler(saveStateObj);
+		if(playMode == PLAY_EDIT) {
+			startEditTicker();
+		} else {
+			startAllSpriteObj();
+			startPlayTicker();
+		}
+		gameResume();
+		self.enable();
+	}
+}
+
+function linkIconClass( _screenX1, _screenY1, _scale, _bitmap)
+{
+	//_scale = _scale*2/3;
+	var border = 4 * _scale;
+	var mainMainCanvas, stage;
+	var	menuIcon, menuBG;
+	var saveStateObj;
+	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
+	
+	var bitmapX = _bitmap.getBounds().width * _scale;
+	var bitmapY = _bitmap.getBounds().height * _scale;	
+	var self = this;
+	var enabled = 0;
+	
+	init();
+	
+	function init()
+	{
+		createCanvas();
+		createMenuIcon();
+	}
+	
+	this.enable = function ()
+	{
+		if(enabled) return;
+		enabled = 1;
+		disableMouseHandler();
+		enableMouseHandler();
+		menuIcon.set({alpha:1})
+		stage.enableMouseOver(60);
+		stage.update();
+	}
+	
+	this.disable = function (hidden)
+	{
+		disableMouseHandler();
+		if(hidden) {
+			menuIcon.set({alpha:0})
+		} else {
+			menuIcon.set({alpha:1})
+		}
+		stage.update();
+		enabled = 0;
+		stage.enableMouseOver(0);
+	}
+	
+	function enableMouseHandler()
+	{
+		mouseOverHandler = menuIcon.on("mouseover", mouseOver);
+		mouseOutHandler = menuIcon.on("mouseout", mouseOut);
+		mouseClickHandler = menuIcon.on("click", mouseClick);
+	}
+	
+	function disableMouseHandler()
+	{
+		menuIcon.removeEventListener("mouseover", mouseOverHandler);
+		menuIcon.removeEventListener("mouseout", mouseOutHandler);
+		menuIcon.removeEventListener("click", mouseClickHandler);
+		stage.cursor = "default";
+		stage.update();
+	}
+	
+	function createCanvas()
+	{
+		mainMainCanvas = document.createElement('canvas');
+		mainMainCanvas.id     = "share_menu";
+		mainMainCanvas.width  = bitmapX+border*2;
+		mainMainCanvas.height = bitmapY+border*2;
+	
+		var left = (_screenX1 - mainMainCanvas.width - screenBorder),
+			top  = (mainMainCanvas.height*4 + bitmapY*5/2)|0; // four icons plus 5 half-height spaces between the icons
+		
+		mainMainCanvas.style.left = left + "px";
+		mainMainCanvas.style.top =  top + "px";
+		mainMainCanvas.style.position = "absolute";
+		document.body.appendChild(mainMainCanvas);
+	}
+	
+	function createMenuIcon()
+	{
+		stage = new createjs.Stage(mainMainCanvas);
+		menuIcon = new createjs.Container();
+		menuBG = new createjs.Shape();
+		
+		menuBG.graphics.beginFill(mouseOverBGColor)
+			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
+		menuBG.alpha = 0;
+		menuIcon.addChild(menuBG);
+		_bitmap.setTransform(border, border, _scale, _scale);
+		menuIcon.addChild(_bitmap);
+		
+		menuIcon.set({alpha:0})
+		stage.addChild(menuIcon);
+		stage.update();
+	}
+	
+	function mouseOver()
+	{
+		if(gameState == GAME_PAUSE || //// demoDataLoading ||
+		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+		stage.cursor = "pointer";
+		menuBG.alpha = 1;
+		stage.update();
+	}
+	
+	function mouseOut()
+	{
+		stage.cursor = "default";
+		menuBG.alpha = 0;
+		stage.update();
+	}
+	
+	function mouseClick()
+	{
+		//use a placeholder link for now...
+		const shareableLevelLink = "http://localhost:8081/lodeRunner.html?map=HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX00000HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH&";
+		prompt("Here's a shareable link to the current level:", shareableLevelLink);
+		if(gameState == GAME_PAUSE || //// demoDataLoading ||
+		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+		// saveState();
 		////mainMenu(restoreState);
-		gameMenu(restoreState);
-		mouseOut();
+		// gameMenu(restoreState);
+		// mouseOut();
 	}
 
 	function saveState()

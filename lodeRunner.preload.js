@@ -22,6 +22,7 @@ var mainMenuIconBitmap, mainMenuIconObj;
 var selectIconBitmap, selectIconObj;
 var demoIconBitmap, demoIconObj;
 var shareMenuIconBitmap, shareMenuIconObj;
+var linkIconBitmap, linkIconObj;
 var soundOnIconBitmap, soundOffIconBitmap, soundIconObj;
 var helpIconBitmap, helpIconObj;
 var infoObj, infoIconBitmap, infoIconObj;
@@ -206,6 +207,7 @@ function preloadResource()
 
 		{ src: "image/demo.png"+noCache,	id: "demo" },
 		{ src: "image/share.png"+noCache,	id: "share" },
+		{ src: "image/link.png"+noCache,	id: "link" },
 		
 		{ src: "image/soundOn.png"+noCache,  id: "soundOn" },
 		{ src: "image/soundOff.png"+noCache, id: "soundOff" },
@@ -388,6 +390,9 @@ function preloadResource()
 
 		shareMenuIconBitmap = new createjs.Bitmap(preload.getResult("share"));
 		shareMenuIconObj = new shareMenuIconClass(screenX1, screenY1, tileScale, shareMenuIconBitmap);
+
+		linkIconBitmap = new createjs.Bitmap(preload.getResult("link"));
+		linkIconObj = new linkIconClass(screenX1, screenY1, tileScale, linkIconBitmap);
 
 		soundOnIconBitmap = new createjs.Bitmap(preload.getResult("soundOn")); //04/18/2015
 		soundOffIconBitmap = new createjs.Bitmap(preload.getResult("soundOff"));
