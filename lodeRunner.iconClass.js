@@ -136,7 +136,7 @@ function mainMenuIconClass( _screenX1, _screenY1, _scale, _mainMenuBitmap)
 		}
 		self.disable();
 	}
-	
+ 	
 	function restoreState()
 	{
 		restoreKeyHandler(saveStateObj);
@@ -610,11 +610,11 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 			"\nTo export this level, just copy the text below." + 
 			"\nTo import a different level, paste in it's level map.", exportableLevelMap);
 
+		testLevelInfo.level = editLevels+1;
 		testLevelInfo.levelMap = importedLevelMap;
 		testLevelInfo.pass = 0;
 		testLevelInfo.fromPlayData = -1;
 		testLevelInfo.fromLevel = -1;
-		//I need to figure out how to increase the edit level so the import doesn't overwrite an existing level
 		setTestLevel(testLevelInfo);
 		restoreState();
 		startEditMode();
