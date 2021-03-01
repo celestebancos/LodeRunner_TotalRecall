@@ -1,0 +1,32 @@
+HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH&
+
+#                          H                           H                           H                           H                           H                           H                           H                           H                           H                           H                           H                           H                           H                           H&$$$$$$$$$$$$$$$$$$$$$$$$$$H############################
+
+{"level":2,"map":"#                          H                           H                           H                           H                           H                           H                           H                           H                           H                           H                           H                           H                           H                           H&$$$$$$$$$$$$$$$$$$$$$$$$$$H############################","pass":1,"fromPlayData":-1,"fromLevel":-1}
+
+
+                  S             $             S         #######H#######   S                H----------S    $           H    ##H   #######H##       H    ##H          H       0 H    ##H       $0 H  ##H#####    ########H#######  H                 H         H           0     H       #########H##########H                H          H              $ H----------H   $       H######         #######H    H         &  $         H############################
+
+var tileInfo = [
+	[ "eraser",   ' ', '+' ], //(0), empty
+	[ "brick",    '#' ], //(1)
+	[ "solid",    '@' ], //(2)
+	[ "ladder",   'H' ], //(3)
+	[ "rope",     '-' ], //(4)
+	[ "trapBrick",'X' ], //(5)
+	[ "hladder",  'S' ], //(6)
+	[ "gold",     '$' ], //(7)
+	[ "guard1",   '0' ], //(8)
+	[ "runner1",  '&' ]  //(9)
+];
+
+Empty
+Brick
+Solid
+Ladder
+Rope
+Trap
+Hidden
+Gold
+Monster
+Runner
