@@ -607,6 +607,7 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		//I'll probably want to change this later. I don't know if it has to match when the button is visible or not
 		if(gameState == GAME_PAUSE || //// demoDataLoading ||
 		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+			
 		//saveState() is a function right below this one. I'm not going to look into all the things it does right now.
 		saveState();
 
@@ -626,10 +627,11 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 			levelMap: importedLevelMap,
 			level: editLevels+1, //sets the level to one more than the number of custom levels
 			pass: 0, //the level has not passed the playtest yet
-			fromPlayData: -1, 
-			fromLevel: -1, //the level is not a modified version of one of the game levels
-			modified: 1
+			fromPlayData: -1, //the version id of the game this level is from (or -1 if it's not from a game)
+			fromLevel: -1, //the level number of the level this level is from (or -1 if it's not from a level)
+			modified: 1 //0 means the level has been saved, 1 means not saved yet (it's  been modified since the last save) 
 		}
+		//store the test level info in local storage as a JSON string
 		setTestLevel(testLevelInfo);
 
 		restoreState();
