@@ -487,6 +487,7 @@ function demoIconClass( _screenX1, _screenY1, _scale, _bitmap)
 	}
 }
 
+//Celeste: this is the class for the new share button
 function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 {
 	//_scale = _scale*2/3;
@@ -599,6 +600,7 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		stage.update();
 	}
 	
+	//Celeste: this function controls what happens when the user clicks the share button
 	function mouseClick()
 	{
 		if(gameState == GAME_PAUSE || //// demoDataLoading ||
@@ -648,6 +650,7 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 	}
 }
 
+//Celeste: this is the class for the new link button
 function linkIconClass( _screenX1, _screenY1, _scale, _bitmap)
 {
 	//_scale = _scale*2/3;
@@ -760,6 +763,7 @@ function linkIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		stage.update();
 	}
 	
+	//	//Celeste: this function controls what happens when the user clicks the link button
 	function mouseClick()
 	{
 		//use a placeholder link for now...
