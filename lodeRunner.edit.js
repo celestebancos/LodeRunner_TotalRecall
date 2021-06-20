@@ -1006,6 +1006,9 @@ function editHandleKeyDown(event)
 		switch(event.keyCode) {
 		case KEYCODE_C: //CTRL-C : copy current level
 			copyLevelMap = copyEditingMap();
+			//Celeste: copy the current level to the clipboard as well
+			//I tried the line below but I get an error because navigator.clipboard is undefined. I haven't tried very hard to trouble-shoot yet. 
+			// navigator.clipboard.writeText('Clipboard test').then(console.log('Text written to Clipboard'))
 			copyLevelPassed = (!testLevelInfo.modified && lastRunner) || testLevelInfo.pass;
 			setTimeout(function() { showTipsText("COPY MAP", 1500);}, 50);
 			break;	
