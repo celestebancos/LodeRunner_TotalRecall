@@ -603,21 +603,35 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 	//Celeste: this function controls what happens when the user clicks the share button
 	function mouseClick()
 	{
+		//I think this means don't do anything if the game is paused or if it's not started, not running and not in edit mode
+		//I'll probably want to change this later. I don't know if it has to match when the button is visible or not
 		if(gameState == GAME_PAUSE || //// demoDataLoading ||
 		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
-
+		//saveState() is a function right below this one. I'm not going to look into all the things it does right now.
 		saveState();
+
+		//here I am getting the level info that's currently stored in testLevelInfo.
+		//I'd rather get the level info based on what's currently on the screen so I'll have to change this.
 		const exportableLevelMap = testLevelInfo.levelMap;
+
+		//Show the user the current level map and allow them to edit it and paste in a new one
 		const importedLevelMap = prompt("Here's the current level map." + 
 			"\nTo export this level, just copy the text below." + 
 			"\nTo import a different level, paste in it's level map.", exportableLevelMap);
 
-		testLevelInfo.level = editLevels+1;
-		testLevelInfo.levelMap = importedLevelMap;
-		testLevelInfo.pass = 0;
-		testLevelInfo.fromPlayData = -1;
-		testLevelInfo.fromLevel = -1;
+		//here is where I want to show an "are you sure you want to abort current editing" prompt
+		//in case the user had not saved their changes
+
+		testLevelInfo = {
+			levelMap: importedLevelMap,
+			level: editLevels+1, //sets the level to one more than the number of custom levels
+			pass: 0, //the level has not passed the playtest yet
+			fromPlayData: -1, 
+			fromLevel: -1, //the level is not a modified version of one of the game levels
+			modified: 1
+		}
 		setTestLevel(testLevelInfo);
+
 		restoreState();
 		startEditMode();
 	}
@@ -763,7 +777,7 @@ function linkIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		stage.update();
 	}
 	
-	//	//Celeste: this function controls what happens when the user clicks the link button
+	//Celeste: this function controls what happens when the user clicks the link button
 	function mouseClick()
 	{
 		//use a placeholder link for now...
