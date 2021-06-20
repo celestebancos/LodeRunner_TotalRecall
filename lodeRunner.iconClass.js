@@ -607,12 +607,12 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		//I'll probably want to change this later. I don't know if it has to match when the button is visible or not
 		if(gameState == GAME_PAUSE || //// demoDataLoading ||
 		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
-			
+
 		//saveState() is a function right below this one. I'm not going to look into all the things it does right now.
 		saveState();
 
 		//here I am getting the level info that's currently stored in testLevelInfo.
-		//I'd rather get the level info based on what's currently on the screen so I'll have to change this.
+		//saveState() above stored the current level from the editor into testLevelInfo so it should be up-to-date
 		const exportableLevelMap = testLevelInfo.levelMap;
 
 		//Show the user the current level map and allow them to edit it and paste in a new one
@@ -624,7 +624,7 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		//in case the user had not saved their changes
 
 		testLevelInfo = {
-			levelMap: importedLevelMap,
+			levelMap: importedLevelMap || exportableLevelMap,  //put the old map in if the user hit cancel on the prompt
 			level: editLevels+1, //sets the level to one more than the number of custom levels
 			pass: 0, //the level has not passed the playtest yet
 			fromPlayData: -1, //the version id of the game this level is from (or -1 if it's not from a game)
