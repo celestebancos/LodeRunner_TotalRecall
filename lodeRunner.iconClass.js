@@ -618,7 +618,7 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		//Show the user the current level map and allow them to edit it and paste in a new one
 		const importedLevelMap = prompt("Here's the current level map." + 
 			"\nTo export this level, just copy the text below." + 
-			"\nTo import a different level, paste in it's level map.", exportableLevelMap);
+			"\nTo import a different level, paste in its level map.", exportableLevelMap);
 
 		//here is where I want to show an "are you sure you want to abort current editing" prompt
 		//in case the user had not saved their changes
