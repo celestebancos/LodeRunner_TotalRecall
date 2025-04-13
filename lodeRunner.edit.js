@@ -1026,8 +1026,7 @@ function editHandleKeyDown(event)
 					}
 					
 					const importedMap = clipText.substring(1);
-					applyPastedMap(importedMap);
-					setTimeout(function() { showTipsText("PASTED FROM CLIPBOARD", 1500);}, 50);
+					handlePaste(importedMap);
 				}).catch(err => {
 					fallbackToInternalBuffer();
 				});
@@ -1041,10 +1040,26 @@ function editHandleKeyDown(event)
 
 	function fallbackToInternalBuffer() {
 		if(copyLevelMap != null) {
-			applyPastedMap(copyLevelMap);
-			setTimeout(function() { showTipsText("PASTE MAP", 1500);}, 50);
+			handlePaste(copyLevelMap);
 		} else {
 			setTimeout(function() { showTipsText("NO MAP TO PASTE", 1500);}, 50);
+		}
+	}
+
+	function handlePaste(map) {
+		// If the current level is modified, show confirmation dialog
+		if (testLevelInfo.modified) {
+			gamePause();
+			stopEditTicker();
+			yesNoDialog(["Abort current editing?"], yesBitmap, noBitmap, mainStage, tileScale, (confirmed) => {
+				if (confirmed) {
+					applyPastedMap(map);
+				}
+				gameResume();
+				startEditTicker();
+			});
+		} else {
+			applyPastedMap(map);
 		}
 	}
 
@@ -1055,6 +1070,7 @@ function editHandleKeyDown(event)
 		testLevelInfo.fromPlayData = testLevelInfo.fromLevel = -1;
 		setTestLevel(testLevelInfo);
 		startEditMode();
+		setTimeout(function() { showTipsText("PASTE MAP", 1500);}, 50);
 	}
 }	
 
