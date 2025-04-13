@@ -1,4 +1,3 @@
-
 var mouseOverBGColor = "#fefef1"; //icon background color while mouse over it
 
 function mainMenuIconClass( _screenX1, _screenY1, _scale, _mainMenuBitmap)
@@ -603,39 +602,99 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 	//Celeste: this function controls what happens when the user clicks the share button
 	function mouseClick()
 	{
-		//I think this means don't do anything if the game is paused or if it's not started, not running and not in edit mode
-		//I'll probably want to change this later. I don't know if it has to match when the button is visible or not
-		if(gameState == GAME_PAUSE || //// demoDataLoading ||
+		//Don't do anything if the game is paused or if it's not started, not running and not in edit mode
+		if(gameState == GAME_PAUSE || 
 		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
 
-		//saveState() is a function right below this one. I'm not going to look into all the things it does right now.
 		saveState();
 
-		//here I am getting the level info that's currently stored in testLevelInfo.
-		//saveState() above stored the current level from the editor into testLevelInfo so it should be up-to-date
 		const exportableLevelMap = testLevelInfo.levelMap;
+		const isEmptyLevel = exportableLevelMap.trim() === "" || exportableLevelMap.split("").every(char => char === " ");
 
-		//Show the user the current level map and allow them to edit it and paste in a new one
-		const importedLevelMap = prompt("Here's the current level map." + 
-			"\nTo export this level, just copy the text below." + 
-			"\nTo import a different level, paste in its level map.", exportableLevelMap);
+		// Log the exportable level map
+		console.log('Exportable Level Map:');
+		console.log('Length:', exportableLevelMap.length);
+		console.log('Content:', exportableLevelMap);
+		console.log('Is Empty:', isEmptyLevel);
 
-		//here is where I want to show an "are you sure you want to abort current editing" prompt
-		//in case the user had not saved their changes
+		// Add a special marker to preserve whitespace
+		const markedExportableMap = '|' + exportableLevelMap;
 
-		testLevelInfo = {
-			levelMap: importedLevelMap || exportableLevelMap,  //put the old map in if the user hit cancel on the prompt
-			level: editLevels+1, //sets the level to one more than the number of custom levels
-			pass: 0, //the level has not passed the playtest yet
-			fromPlayData: -1, //the version id of the game this level is from (or -1 if it's not from a game)
-			fromLevel: -1, //the level number of the level this level is from (or -1 if it's not from a level)
-			modified: 1 //0 means the level has been saved, 1 means not saved yet (it's  been modified since the last save) 
+		// Show import/export prompt first
+		const importedLevelMap = prompt(
+			"Here's the current level map.\n" + 
+			"To export this level, just copy the text below.\n" + 
+			"To import a different level, paste in its level map.", 
+			markedExportableMap
+		);
+
+		// If user clicked cancel or didn't change anything, just restore and return
+		if (!importedLevelMap || importedLevelMap === markedExportableMap) {
+			restoreState();
+			return;
 		}
-		//store the test level info in local storage as a JSON string
-		setTestLevel(testLevelInfo);
 
-		restoreState();
-		startEditMode();
+		// Remove the marker and preserve whitespace
+		if (!importedLevelMap.startsWith('|')) {
+			alert("Invalid level map format. Please copy and paste the entire level map including the '|' marker at the start.");
+			restoreState();
+			return;
+		}
+		const cleanImportedMap = importedLevelMap.substring(1);
+
+		// Log the imported level map
+		console.log('Imported Level Map:');
+		console.log('Length:', cleanImportedMap.length);
+		console.log('Content:', cleanImportedMap);
+
+		// If current level is empty or unmodified, proceed without confirmation
+		if (isEmptyLevel || !testLevelInfo.modified) {
+			applyImport(cleanImportedMap);
+		} else {
+			// Show confirmation only if we're about to overwrite a non-empty modified level
+			yesNoDialog(
+				["Abort current editing?"], 
+				yesBitmap, 
+				noBitmap, 
+				mainStage, 
+				tileScale, 
+				(confirmed) => {
+					if (confirmed) {
+						applyImport(cleanImportedMap);
+					} else {
+						restoreState();
+					}
+				}
+			);
+		}
+
+		function applyImport(newLevelMap) {
+			// Ensure the level map has the correct dimensions while preserving whitespace
+			let formattedMap = "";
+			const totalTiles = NO_OF_TILES_X * NO_OF_TILES_Y;
+			
+			// Take exactly totalTiles characters from the input, preserving whitespace
+			for (let i = 0; i < totalTiles; i++) {
+				formattedMap += newLevelMap.charAt(i) || ' '; // Use space if character is missing
+			}
+
+			// Log the formatted map
+			console.log('Formatted Level Map:');
+			console.log('Length:', formattedMap.length);
+			console.log('Content:', formattedMap);
+
+			testLevelInfo = {
+				levelMap: formattedMap,
+				level: editLevels + 1,
+				pass: 0,
+				fromPlayData: -1,
+				fromLevel: -1,
+				modified: 1
+			};
+			setTestLevel(testLevelInfo);
+			restoreState();
+			startEditMode();
+		}
 	}
 
 	function saveState()
