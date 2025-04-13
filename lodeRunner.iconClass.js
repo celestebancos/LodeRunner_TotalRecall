@@ -611,12 +611,6 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		const exportableLevelMap = testLevelInfo.levelMap;
 		const isEmptyLevel = exportableLevelMap.trim() === "" || exportableLevelMap.split("").every(char => char === " ");
 
-		// Log the exportable level map
-		console.log('Exportable Level Map:');
-		console.log('Length:', exportableLevelMap.length);
-		console.log('Content:', exportableLevelMap);
-		console.log('Is Empty:', isEmptyLevel);
-
 		// Add a special marker to preserve whitespace
 		const markedExportableMap = '|' + exportableLevelMap;
 
@@ -641,11 +635,6 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 			return;
 		}
 		const cleanImportedMap = importedLevelMap.substring(1);
-
-		// Log the imported level map
-		console.log('Imported Level Map:');
-		console.log('Length:', cleanImportedMap.length);
-		console.log('Content:', cleanImportedMap);
 
 		// If current level is empty or unmodified, proceed without confirmation
 		if (isEmptyLevel || !testLevelInfo.modified) {
@@ -677,11 +666,6 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 			for (let i = 0; i < totalTiles; i++) {
 				formattedMap += newLevelMap.charAt(i) || ' '; // Use space if character is missing
 			}
-
-			// Log the formatted map
-			console.log('Formatted Level Map:');
-			console.log('Length:', formattedMap.length);
-			console.log('Content:', formattedMap);
 
 			testLevelInfo = {
 				levelMap: formattedMap,
