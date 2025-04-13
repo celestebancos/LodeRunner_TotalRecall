@@ -40,9 +40,7 @@ function pressCtrlKey(code)
 		gameState = GAME_RUNNER_DEAD;	
 		break;	
 	case KEYCODE_C: //CTRL-C : copy current level
-		copyLevelMap = levelData[curLevel-1];
-		copyLevelPassed = 1; //means copy from exists level	
-		showTipsText("COPY MAP", 1500);	
+		copyCurrentLevel();
 		break;	
 	case KEYCODE_J:	//CTRL-J : gamepad toggle
 		toggleGamepadMode(1);
@@ -330,4 +328,72 @@ function handleKeyUp(event)
 	if(!event){ event = window.event; } 
 	if(recordKeyCode == event.keyCode && keyPressed != -1) keyPressed = 0;
 	return true;
+}
+
+function copyCurrentLevel() {
+    let levelMap;
+    let passed = 0;
+    
+    // Get the current level map based on the play mode
+    switch(playMode) {
+        case PLAY_EDIT:
+            levelMap = copyEditingMap();
+            passed = (!testLevelInfo.modified && lastRunner) || testLevelInfo.pass;
+            break;
+        case PLAY_TEST:
+            levelMap = testLevelInfo.levelMap;
+            passed = testLevelInfo.pass;
+            break;
+        default:
+            levelMap = levelData[curLevel-1];
+            passed = 1; // means copy from existing level
+            break;
+    }
+    
+    // Store in internal buffer
+    copyLevelMap = levelMap;
+    copyLevelPassed = passed;
+    
+    // Add marker character and copy to clipboard
+    const markedMap = '|' + levelMap;
+    
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(markedMap).then(() => {
+            setTimeout(function() { showTipsText("COPIED TO CLIPBOARD", 1500);}, 50);
+        }).catch(err => {
+            // Try fallback method if available
+            if (document.execCommand) {
+                try {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = markedMap;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    setTimeout(function() { showTipsText("COPIED TO CLIPBOARD", 1500);}, 50);
+                } catch (fallbackErr) {
+                    setTimeout(function() { showTipsText("COPY MAP", 1500);}, 50);
+                }
+            } else {
+                setTimeout(function() { showTipsText("COPY MAP", 1500);}, 50);
+            }
+        });
+    } else {
+        // Try fallback method if available
+        if (document.execCommand) {
+            try {
+                const textArea = document.createElement('textarea');
+                textArea.value = markedMap;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                setTimeout(function() { showTipsText("COPIED TO CLIPBOARD", 1500);}, 50);
+            } catch (fallbackErr) {
+                setTimeout(function() { showTipsText("COPY MAP", 1500);}, 50);
+            }
+        } else {
+            setTimeout(function() { showTipsText("COPY MAP", 1500);}, 50);
+        }
+    }
 }

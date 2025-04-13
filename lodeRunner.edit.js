@@ -50,11 +50,14 @@ var editorTile =[], editorActiveTileId = -1;
 var editorButton = [], editorButtonMouseOverId = -1;
 var editInNarrowScreen = 0;
 
+var copyLevelMap = null, copyLevelPassed = 0;
+
 function startEditMode() 
 {
 	playMode = PLAY_EDIT;
 	playData = PLAY_DATA_USERDEF; //for title name only
 	mainStage.removeAllChildren();
+	
 	document.onkeydown = editHandleKeyDown;
 	
 	editInNarrowScreen = canvasEditReSize();
@@ -1005,28 +1008,54 @@ function editHandleKeyDown(event)
 	if (event.ctrlKey) {
 		switch(event.keyCode) {
 		case KEYCODE_C: //CTRL-C : copy current level
-			copyLevelMap = copyEditingMap();
-			//Celeste: copy the current level to the clipboard as well
-			//I tried the line below but I get an error because navigator.clipboard is undefined. I haven't tried very hard to trouble-shoot yet. 
-			// navigator.clipboard.writeText('Clipboard test').then(console.log('Text written to Clipboard'))
-			copyLevelPassed = (!testLevelInfo.modified && lastRunner) || testLevelInfo.pass;
-			setTimeout(function() { showTipsText("COPY MAP", 1500);}, 50);
-			break;	
+			// Copy functionality is now handled by the common copyCurrentLevel function
+			return true;
 		case KEYCODE_V: //CTRL-V : paste copy map
-			if(copyLevelMap != null) {
-				testLevelInfo.levelMap = copyLevelMap;
-				testLevelInfo.modified = 1;
-				testLevelInfo.pass = copyLevelPassed;
-				testLevelInfo.fromPlayData = testLevelInfo.fromLevel = -1;
-				setTestLevel(testLevelInfo);
-				startEditMode();
-				////setButtonState();
-				setTimeout(function() { showTipsText("PASTE MAP", 1500);}, 50);
+			if (navigator.clipboard) {
+				navigator.clipboard.readText().then(clipText => {
+					if (!clipText) {
+						fallbackToInternalBuffer();
+						return;
+					}
+					
+					// Require marker character
+					if (!clipText.startsWith('|')) {
+						setTimeout(function() { showTipsText("INVALID MAP FORMAT", 1500);}, 50);
+						fallbackToInternalBuffer();
+						return;
+					}
+					
+					const importedMap = clipText.substring(1);
+					applyPastedMap(importedMap);
+					setTimeout(function() { showTipsText("PASTED FROM CLIPBOARD", 1500);}, 50);
+				}).catch(err => {
+					fallbackToInternalBuffer();
+				});
+			} else {
+				fallbackToInternalBuffer();
 			}
-			break;	
+			break;    
 		}
 	}
 	return true;
+
+	function fallbackToInternalBuffer() {
+		if(copyLevelMap != null) {
+			applyPastedMap(copyLevelMap);
+			setTimeout(function() { showTipsText("PASTE MAP", 1500);}, 50);
+		} else {
+			setTimeout(function() { showTipsText("NO MAP TO PASTE", 1500);}, 50);
+		}
+	}
+
+	function applyPastedMap(map) {
+		testLevelInfo.levelMap = map;
+		testLevelInfo.modified = 1;
+		testLevelInfo.pass = copyLevelPassed;
+		testLevelInfo.fromPlayData = testLevelInfo.fromLevel = -1;
+		setTestLevel(testLevelInfo);
+		startEditMode();
+	}
 }	
 
 function checkTileMouseOver(x, y)
