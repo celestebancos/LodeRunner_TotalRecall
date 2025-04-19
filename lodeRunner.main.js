@@ -138,19 +138,8 @@ function init()
 	
 	// Check for shared level in URL
 	const params = getUrlParams();
-	if (params.map) {
-		if (loadSharedLevel(params.map)) {
-			// If valid shared level, go straight to edit mode
-			canvasReSize();
-			createStage();
-			setBackground();
-			loadStoreVariable();
-			initMenuVariable();
-			getEditLevelInfo();
-			startEditMode();
-			return;
-		}
-	}
+	const sharedLevel = params.map;
+	const hasSharedLevel = sharedLevel ? true : false;
 	
 	// Normal initialization if no shared level
 	canvasReSize();
@@ -167,6 +156,10 @@ function init()
 	////genUserLevel(MAX_EDIT_LEVEL); //for debug only
 	getEditLevelInfo(); //load edit levels
 	showLoadingPage(); //preload function 
+	if(hasSharedLevel) {
+		clearIdleDemoTimer();
+		enableStageClickEvent();
+	}
 }
 
 function loadStoreVariable()

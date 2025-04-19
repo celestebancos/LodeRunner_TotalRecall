@@ -431,7 +431,13 @@ function preloadResource()
 		createMenuBitmapIcon();
 		getFirstPlayInfo();
 		createjs.Ticker.off("tick", preloadTicker); //remove ticker of cover page
-		waitIdleDemo(4000); //wait user key or show demo level
+		
+		// Only start idle demo if no shared level
+		const params = getUrlParams();
+		const hasSharedLevel = params.map ? true : false;
+		if (!hasSharedLevel) {
+			waitIdleDemo(4000); //wait user key or show demo level
+		}
 	}
 }
 
