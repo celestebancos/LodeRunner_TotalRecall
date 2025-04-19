@@ -825,15 +825,21 @@ function linkIconClass( _screenX1, _screenY1, _scale, _bitmap)
 	//Celeste: this function controls what happens when the user clicks the link button
 	function mouseClick()
 	{
-		//use a placeholder link for now...
-		const shareableLevelLink = "http://localhost:8081/lodeRunner.html?map=HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX00000HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH&";
-		prompt("Here's a shareable link to the current level:", shareableLevelLink);
-		if(gameState == GAME_PAUSE || //// demoDataLoading ||
+		if(gameState == GAME_PAUSE || 
 		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
-		// saveState();
-		////mainMenu(restoreState);
-		// gameMenu(restoreState);
-		// mouseOut();
+		
+		// Get current map
+		const currentMap = copyEditingMap();
+		
+		// Convert to URL-safe format
+		const urlSafeMap = toUrlSafeMap(currentMap);
+		
+		// Generate shareable URL with current domain and map data
+		const baseUrl = window.location.origin + window.location.pathname;
+		const shareableUrl = `${baseUrl}?map=${urlSafeMap}`;
+		
+		// Show the shareable link
+		prompt("Here's a shareable link to the current level:", shareableUrl);
 	}
 
 	function saveState()

@@ -61,12 +61,98 @@ var curTheme = THEME_APPLE2; //support 2 themes: apple2 & C64
 
 var dbName = "LodeRunner";
 
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        map: params.get('map')
+    };
+}
+
+// Map between original and URL-safe characters
+const URL_SAFE_MAP = {
+    ' ': '_',  // space to underscore
+    '#': 'B',  // normal brick
+    '@': 'W',  // solid brick
+    'H': 'L',  // ladder
+    '-': 'R',  // rope
+    'X': 'F',  // false brick
+    'S': 'D',  // disappearing ladder
+    '$': 'G',  // gold
+    '0': 'E',  // enemy
+    '&': 'P'   // player
+};
+
+const ORIGINAL_MAP = {
+    '_': ' ',  // underscore to space
+    'B': '#',  // normal brick
+    'W': '@',  // solid brick
+    'L': 'H',  // ladder
+    'R': '-',  // rope
+    'F': 'X',  // false brick
+    'D': 'S',  // disappearing ladder
+    'G': '$',  // gold
+    'E': '0',  // enemy
+    'P': '&'   // player
+};
+
+function toUrlSafeMap(originalMap) {
+    return originalMap.split('').map(char => URL_SAFE_MAP[char] || char).join('');
+}
+
+function fromUrlSafeMap(urlSafeMap) {
+    return urlSafeMap.split('').map(char => ORIGINAL_MAP[char] || char).join('');
+}
+
+function loadSharedLevel(levelMap) {
+    if (!levelMap) return false;
+    
+    // Convert from URL-safe format to original format
+    levelMap = fromUrlSafeMap(levelMap);
+    
+    // Validate the map string length matches expected size
+    if (levelMap.length !== NO_OF_TILES_X * NO_OF_TILES_Y) return false;
+    
+    // Validate map only contains valid characters
+    const validChars = new Set([' ', '#', '@', 'H', '-', 'X', 'S', '$', '0', '&']);
+    for (let char of levelMap) {
+        if (!validChars.has(char)) return false;
+    }
+    
+    // Set up for shared level
+    playMode = PLAY_MODERN;
+    playData = PLAY_DATA_USERDEF;
+    testLevelInfo.levelMap = levelMap;
+    testLevelInfo.level = editLevels + 1;
+    testLevelInfo.pass = 1;
+    testLevelInfo.modified = 1;
+    setTestLevel(testLevelInfo);
+    
+    return true;
+}
+
 function init()
 {
 	var screenSize = getScreenSize();
 	screenX1 = screenSize.x;
 	screenY1 = screenSize.y;
 	
+	// Check for shared level in URL
+	const params = getUrlParams();
+	if (params.map) {
+		if (loadSharedLevel(params.map)) {
+			// If valid shared level, go straight to edit mode
+			canvasReSize();
+			createStage();
+			setBackground();
+			loadStoreVariable();
+			initMenuVariable();
+			getEditLevelInfo();
+			startEditMode();
+			return;
+		}
+	}
+	
+	// Normal initialization if no shared level
 	canvasReSize();
 	createStage();
 	setBackground();
