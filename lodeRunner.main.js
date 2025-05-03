@@ -61,44 +61,16 @@ var curTheme = THEME_APPLE2; //support 2 themes: apple2 & C64
 
 var dbName = "LodeRunner";
 
-function loadSharedLevel(levelMap) {
-    if (!levelMap) return false;
-    
-    // Convert from URL-safe format to original format
-    levelMap = fromUrlSafeMap(levelMap);
-    
-    // Validate the map string length matches expected size
-    if (levelMap.length !== NO_OF_TILES_X * NO_OF_TILES_Y) return false;
-    
-    // Validate map only contains valid characters
-    const validChars = new Set([' ', '#', '@', 'H', '-', 'X', 'S', '$', '0', '&']);
-    for (let char of levelMap) {
-        if (!validChars.has(char)) return false;
-    }
-    
-    // Set up for shared level
-    playMode = PLAY_MODERN;
-    playData = PLAY_DATA_USERDEF;
-    testLevelInfo.levelMap = levelMap;
-    testLevelInfo.level = editLevels + 1;
-    testLevelInfo.pass = 1;
-    testLevelInfo.modified = 1;
-    setTestLevel(testLevelInfo);
-    
-    return true;
-}
-
 function init()
 {
 	var screenSize = getScreenSize();
 	screenX1 = screenSize.x;
 	screenY1 = screenSize.y;
 	
-	// Check for shared level in URL
-	const params = getUrlParams();
-	const sharedLevel = params.map;
+	// Store level data from URL params if it exists
+	const sharedLevel = storeUrlLevel();
 	const hasSharedLevel = sharedLevel ? true : false;
-	
+
 	// Normal initialization if no shared level
 	canvasReSize();
 	createStage();
@@ -368,8 +340,9 @@ function startGame(noCycle)
 		}
 		break;
 	case PLAY_MODERN:
-		getModernInfo();	
-		levelMap = levelData[curLevel-1];
+		getModernInfo();
+		levelMap = getStorage(STORAGE_URL_LEVEL);
+		// levelMap = levelData[curLevel-1];
 		break;	
 	case PLAY_TEST:
 		levelMap = getTestLevelMap();
@@ -1571,4 +1544,43 @@ function mainTick(event)
 	}
 	
 	mainStage.update();
+}
+
+function storeUrlLevel() {
+	const params = getUrlParams();
+	const urlFormattedLevel = params.map;
+	if(urlFormattedLevel) {
+		const gameFormattedLevel = fromUrlSafeMap(urlFormattedLevel);
+		setStorage(STORAGE_URL_LEVEL, gameFormattedLevel);
+		console.log("gameFormattedLevel: ", gameFormattedLevel);
+		return gameFormattedLevel;
+	}
+	return false;
+}
+
+function loadSharedLevel(levelMap) {
+    if (!levelMap) return false;
+    
+    // Convert from URL-safe format to original format
+    levelMap = fromUrlSafeMap(levelMap);
+    
+    // Validate the map string length matches expected size
+    if (levelMap.length !== NO_OF_TILES_X * NO_OF_TILES_Y) return false;
+    
+    // Validate map only contains valid characters
+    const validChars = new Set([' ', '#', '@', 'H', '-', 'X', 'S', '$', '0', '&']);
+    for (let char of levelMap) {
+        if (!validChars.has(char)) return false;
+    }
+    
+    // Set up for shared level
+    playMode = PLAY_MODERN;
+    playData = PLAY_DATA_USERDEF;
+    testLevelInfo.levelMap = levelMap;
+    testLevelInfo.level = editLevels + 1;
+    testLevelInfo.pass = 1;
+    testLevelInfo.modified = 1;
+    setTestLevel(testLevelInfo);
+    
+    return true;
 }

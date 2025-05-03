@@ -189,3 +189,5 @@ var STORAGE_THEME_COLOR = "loderunner_color_";
 
 var STORAGE_REPEAT_ACTION = "loderunner_actRepeat";
 var STORAGE_GAMEPAD_MODE = "loderunner_gamepadMode";
+
+const STORAGE_URL_LEVEL = "loderunner_urlLevel";
