@@ -104,7 +104,8 @@ function showScoreTable(_playData, _curScoreInfo, _callbackFun, _waitTime)
 		canvas2.id     = "canvas2";
 		canvas2.width  = canvasX;
 		canvas2.height = canvasY;
-	
+		canvas2.willReadFrequently = true;
+
 		//Set canvas top left position
 		var left = ((screenX1 - canvasX)/2|0),
 			top  = ((screenY1 - canvasY)/2|0);

@@ -68,7 +68,8 @@ function mainMenuIconClass( _screenX1, _screenY1, _scale, _mainMenuBitmap)
 		mainMainCanvas.id     = "main_menu";
 		mainMainCanvas.width  = bitmapX+border*2;
 		mainMainCanvas.height = bitmapY+border*2;
-	
+		mainMainCanvas.willReadFrequently = true;
+
 		var left = (_screenX1 - mainMainCanvas.width - screenBorder),
 		    top  = bitmapY/2|0;
 		
@@ -218,7 +219,8 @@ function selectIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		selectCanvas.id     = "select_menu";
 		selectCanvas.width  = bitmapX+border*2;
 		selectCanvas.height = bitmapY+border*2;
-	
+		selectCanvas.willReadFrequently = true;
+
 		var left = (_screenX1 - selectCanvas.width - screenBorder),
 		    top  = (selectCanvas.height + bitmapY)|0;
 		
@@ -408,7 +410,8 @@ function demoIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		canvas.id = "theme_menu";
 		canvas.width  = bitmapX+border*2;
 		canvas.height = bitmapY+border*2;
-	
+		canvas.willReadFrequently = true;
+
 		var left = (_screenX1 - canvas.width - screenBorder),
 			top  = (canvas.height*2 + bitmapY*3/2)|0;
 		
@@ -555,7 +558,8 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		mainMainCanvas.id     = "share_menu";
 		mainMainCanvas.width  = bitmapX+border*2;
 		mainMainCanvas.height = bitmapY+border*2;
-	
+		mainMainCanvas.willReadFrequently = true;
+
 		var left = (_screenX1 - mainMainCanvas.width - screenBorder),
 			top  = (mainMainCanvas.height*3 + bitmapY*4/2)|0; // three icons plus 4 half-height spaces between the icons
 		
@@ -778,7 +782,8 @@ function linkIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		mainMainCanvas.id     = "share_menu";
 		mainMainCanvas.width  = bitmapX+border*2;
 		mainMainCanvas.height = bitmapY+border*2;
-	
+		mainMainCanvas.willReadFrequently = true;
+
 		var left = (_screenX1 - mainMainCanvas.width - screenBorder),
 			top  = (mainMainCanvas.height*4 + bitmapY*5/2)|0; // four icons plus 5 half-height spaces between the icons
 		
@@ -936,7 +941,8 @@ function soundIconClass( _screenX1, _screenY1, _scale, _soundOnBitmap, _soundOff
 		canvas.id = "theme_menu";
 		canvas.width  = bitmapX+border*2;
 		canvas.height = bitmapY+border*2;
-	
+		canvas.willReadFrequently = true;
+
 		var left = (_screenX1 - canvas.width - screenBorder),
 			//top  = (_screenY1 - bitmapY*7)|0;
 			top  = (_screenY1 - bitmapY*8.6)|0;
@@ -1082,7 +1088,8 @@ function repeatActionIconClass( _screenX1, _screenY1, _scale, _repeatActionOnBit
 		canvas.id = "theme_menu";
 		canvas.width  = bitmapX+border*2;
 		canvas.height = bitmapY+border*2;
-		
+		canvas.willReadFrequently = true;
+
 		var left = (_screenX1 - canvas.width - screenBorder),
 		    top  = (_screenY1 - bitmapY*6.4)|0;
 		
@@ -1220,7 +1227,8 @@ function infoIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		canvas.id = "info_menu";
 		canvas.width  = bitmapX+border*2;
 		canvas.height = bitmapY+border*2;
-	
+		canvas.willReadFrequently = true;
+
 		var left = (_screenX1 - canvas.width - screenBorder),
 		    top  = (_screenY1 - bitmapY*4.8);
 		
@@ -1372,7 +1380,8 @@ function helpIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		canvas.id = "help_menu";
 		canvas.width  = bitmapX+border*2;
 		canvas.height = bitmapY+border*2;
-	
+		canvas.willReadFrequently = true;
+
 		var left = (_screenX1 - canvas.width - screenBorder),
 		    top  = (_screenY1 - bitmapY*3.2);
 		
@@ -1528,7 +1537,8 @@ function themeIconClass( _screenX1, _screenY1, _scale, _themeBitmapApple2, _them
 		themeCanvas.id = "theme_menu";
 		themeCanvas.width  = bitmapX+border*2;
 		themeCanvas.height = bitmapY+border*2;
-	
+		themeCanvas.willReadFrequently = true;
+		
 		var left = (_screenX1 - themeCanvas.width - screenBorder),
 		    top  = (_screenY1 - bitmapY*1.5);
 		

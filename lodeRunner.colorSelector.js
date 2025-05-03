@@ -73,6 +73,8 @@ function colorSelectorClass(_screenX1, _screenY1, baseX)
 		colorCanvas.id = "theme_color_selector";
 		colorCanvas.width  = px * 2;
 		colorCanvas.height = py * 2;
+		colorCanvas.willReadFrequently = true;
+		
 		colorCanvas.style.left = left + "px";
 		colorCanvas.style.top =  top + "px";
 		colorCanvas.style.position = "absolute";

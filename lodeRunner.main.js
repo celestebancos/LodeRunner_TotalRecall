@@ -195,6 +195,7 @@ function canvasReSize()
 	screenBorder = (screenBorder * tileScale) | 0;
 	
 	canvas = document.getElementById('canvas');
+	canvas.willReadFrequently = true;
 
 	canvas.width = canvasX;
 	canvas.height = canvasY;
@@ -216,7 +217,6 @@ function canvasReSize()
 	
 	W4 = (tileW/4|0); //10, 7, 5,
 	H4 = (tileH/4|0); //11, 8, 5,
-	
 }
 
 function createStage() 

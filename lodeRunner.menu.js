@@ -460,7 +460,8 @@ function selectDialog(_titleName, _checkBitmap, _levelData, _activeLevel, _scree
 		canvas1.id     = "canvas1";
 		canvas1.width  = CANVAS_SIZE_X;
 		canvas1.height = CANVAS_SIZE_Y;
-	
+		canvas1.willReadFrequently = true;
+
 		var left = ((_screenX1 - canvas1.width)/2|0),
 			top  = ((_screenY1 - canvas1.height)/2|0);
 		canvas1.style.left = (left>0?left:0) + "px";

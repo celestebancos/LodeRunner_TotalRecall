@@ -1,4 +1,3 @@
-
 var baseBitmapName = [
 	"empty", "brick", "solid", "ladder", "rope",
 	"trapBrick", "hladder", "gold", "redhat", "guard1", "runner1",
@@ -83,6 +82,7 @@ function getCurColorId()
 function getOrgImageColor(themeName)
 {
 	var canvas = document.createElement('canvas');
+	canvas.willReadFrequently = true;
 	var ctx=canvas.getContext("2d");
 	var stage = new createjs.Stage(canvas);
 	var bitmap = new createjs.Bitmap(getThemeImage("solid"+themeName)); //"solid" as sample image
@@ -90,6 +90,7 @@ function getOrgImageColor(themeName)
 	
 	canvas.width  = bitmap.getBounds().width;
 	canvas.height = bitmap.getBounds().height;
+	
 	stage.addChild(bitmap);	
 	stage.update();
 	stage.cache(0, 0, canvas.width, canvas.height);
@@ -117,11 +118,13 @@ function createBitmap(imageName, oldColor, newColor)
 function changeBitmapColor(bitmap, oldColor, newColor)
 {
 	var canvas = document.createElement('canvas');
+	canvas.willReadFrequently = true;
 	var stage = new createjs.Stage(canvas);
 	var changed;
 	
 	canvas.width  = bitmap.getBounds().width;
 	canvas.height = bitmap.getBounds().height;
+
 	stage.addChild(bitmap);	
 	stage.update();
 	stage.cache(0, 0, canvas.width, canvas.height);
