@@ -304,3 +304,47 @@ function resumeAudioContext()
 		console.error(e);
 	}
 }
+
+//==============================
+// URL Parameter Handling
+//==============================
+const URL_SAFE_MAP = {
+    ' ': '_',  // space to underscore
+    '#': 'B',  // normal brick
+    '@': 'W',  // solid brick
+    'H': 'L',  // ladder
+    '-': 'R',  // rope
+    'X': 'F',  // false brick
+    'S': 'D',  // disappearing ladder
+    '$': 'G',  // gold
+    '0': 'E',  // enemy
+    '&': 'P'   // player
+};
+
+const ORIGINAL_MAP = {
+    '_': ' ',  // underscore to space
+    'B': '#',  // normal brick
+    'W': '@',  // solid brick
+    'L': 'H',  // ladder
+    'R': '-',  // rope
+    'F': 'X',  // false brick
+    'D': 'S',  // disappearing ladder
+    'G': '$',  // gold
+    'E': '0',  // enemy
+    'P': '&'   // player
+};
+
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        map: params.get('map')
+    };
+}
+
+function toUrlSafeMap(originalMap) {
+    return originalMap.split('').map(char => URL_SAFE_MAP[char] || char).join('');
+}
+
+function fromUrlSafeMap(urlSafeMap) {
+    return urlSafeMap.split('').map(char => ORIGINAL_MAP[char] || char).join('');
+}
