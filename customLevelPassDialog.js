@@ -432,8 +432,15 @@ function customGameFinishCallback(selectMode) {
 			startGame();
 			break;
 		case 1: //menu selection
-			//incLevel(1);
-			activeSelectMenu(gameFinishActiveNew, gameFinishCloseIcon, null);
+			// Reset game state
+			playMode = PLAY_NONE;
+			playData = 1;
+			// Clear URL level data
+			setStorage(STORAGE_URL_LEVEL, null);
+			// Show cover page
+			showCoverPage();
+			// Show game version menu
+			gameVersionMenu(null, null);
 			break;
 		case 2: //new level
 			incLevel(1, 0);
