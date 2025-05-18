@@ -423,3 +423,24 @@ function customLevelPassDialog(
 		_stage.update();
 	}
 }
+
+function customGameFinishCallback(selectMode) {
+	switch (selectMode) {
+		case 0: //return (same level)
+			showStartTipsMsg = 0;
+			gameState = GAME_WAITING;
+			startGame();
+			break;
+		case 1: //menu selection
+			//incLevel(1);
+			activeSelectMenu(gameFinishActiveNew, gameFinishCloseIcon, null);
+			break;
+		case 2: //new level
+			incLevel(1, 0);
+			gameState = GAME_NEW_LEVEL;
+			break;
+		default:
+			debug("design error !");
+			break;
+	}
+}

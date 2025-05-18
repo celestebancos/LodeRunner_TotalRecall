@@ -1471,7 +1471,7 @@ function mainTick(event) {
 						nextBitmap,
 						mainStage,
 						tileScale,
-						gameFinishCallback
+						customGameFinishCallback
 					);
 					gameState = GAME_WAITING;
 					break;
