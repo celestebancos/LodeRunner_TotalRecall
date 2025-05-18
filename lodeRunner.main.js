@@ -89,6 +89,8 @@ function init()
 	if(hasSharedLevel) {
 		clearIdleDemoTimer();
 		enableStageClickEvent();
+		playMode = PLAY_URL;
+		playData = PLAY_DATA_USERDEF;
 	}
 }
 
@@ -273,19 +275,24 @@ function checkIdleTime(maxIdleTime)
 function getLastPlayInfo()
 {
 	var infoJSON = getStorage(STORAGE_LASTPLAY_MODE);
-	playMode = PLAY_NONE;
 
-	if(infoJSON) {
-		var infoObj = JSON.parse(infoJSON);
-		playMode = infoObj.m; //mode= 1: classic, 2:time 
-		playData = infoObj.d; //1: classic lode runner, 2: professional lode runner, 3: lode runner 3 ....
-	}
-	
-	if( (playMode != PLAY_CLASSIC && playMode != PLAY_MODERN) || 
-	    (playData < 1 || (playData > maxPlayId && playData != PLAY_DATA_USERDEF) )
-	){
-		playMode = PLAY_CLASSIC;
-		playData = 1; //classic lode runner
+	if(playMode == PLAY_URL) {
+		console.log("PLAY_URL");
+	} else {
+		playMode = PLAY_NONE;
+
+		if(infoJSON) {
+			var infoObj = JSON.parse(infoJSON);
+			playMode = infoObj.m; //mode= 1: classic, 2:time 
+			playData = infoObj.d; //1: classic lode runner, 2: professional lode runner, 3: lode runner 3 ....
+		}
+		
+		if( (playMode != PLAY_CLASSIC && playMode != PLAY_MODERN) || 
+			(playData < 1 || (playData > maxPlayId && playData != PLAY_DATA_USERDEF) )
+		){
+			playMode = PLAY_CLASSIC;
+			playData = 1; //classic lode runner
+		}
 	}
 }
 
@@ -341,8 +348,7 @@ function startGame(noCycle)
 		break;
 	case PLAY_MODERN:
 		getModernInfo();
-		levelMap = getStorage(STORAGE_URL_LEVEL);
-		// levelMap = levelData[curLevel-1];
+		levelMap = levelData[curLevel-1];
 		break;	
 	case PLAY_TEST:
 		levelMap = getTestLevelMap();
@@ -358,6 +364,15 @@ function startGame(noCycle)
 	case PLAY_AUTO:
 		getAutoDemoLevel(1);
 		levelMap = levelData[curLevel-1];	
+		break;
+	case PLAY_URL:
+		levelMap = getStorage(STORAGE_URL_LEVEL);
+		if (!levelMap) {
+			// If no URL level found, fall back to classic mode
+			playMode = PLAY_CLASSIC;
+			getClassicInfo();
+			levelMap = levelData[curLevel-1];
+		}
 		break;
 	}
 	showLevel(levelMap);
@@ -1199,6 +1214,9 @@ function showDataMsg()
 		case PLAY_DEMO:
 			nameTxt1 = "Demo Mode";
 			break;	
+		case PLAY_URL:
+			nameTxt1 = "Shared Level";
+			break;
 		case PLAY_CLASSIC:
 			if(playData != PLAY_DATA_USERDEF) nameTxt1 = "Challenge Mode";
 			else nameTxt1 = "Play Mode";	
@@ -1466,6 +1484,10 @@ function mainTick(event)
 			setTimeout(function() { back2EditMode(1);},500);	
 			gameState = GAME_WAITING;
 			break;
+		case PLAY_URL:
+			soundPlay(soundEnding);
+			gameState = GAME_WAITING;
+			break;
 		default:
 			error(arguments.callee.name, "design error, playMode =" + playMode);
 			break;	
@@ -1552,7 +1574,6 @@ function storeUrlLevel() {
 	if(urlFormattedLevel) {
 		const gameFormattedLevel = fromUrlSafeMap(urlFormattedLevel);
 		setStorage(STORAGE_URL_LEVEL, gameFormattedLevel);
-		console.log("gameFormattedLevel: ", gameFormattedLevel);
 		return gameFormattedLevel;
 	}
 	return false;
