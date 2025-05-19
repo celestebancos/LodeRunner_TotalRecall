@@ -1,134 +1,132 @@
 var mouseOverBGColor = "#fefef1"; //icon background color while mouse over it
 
-function mainMenuIconClass( _screenX1, _screenY1, _scale, _mainMenuBitmap)
-{
+function mainMenuIconClass(_screenX1, _screenY1, _scale, _mainMenuBitmap) {
 	//_scale = _scale*2/3;
 	var border = 4 * _scale;
 	var mainMainCanvas, stage;
-	var	menuIcon, menuBG;
+	var menuIcon, menuBG;
 	var saveStateObj;
-	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
-	
+	var mouseOverHandler = null,
+		mouseOutHandler = null,
+		mouseClickHandler = null;
+
 	var bitmapX = _mainMenuBitmap.getBounds().width * _scale;
-	var bitmapY = _mainMenuBitmap.getBounds().height * _scale;	
+	var bitmapY = _mainMenuBitmap.getBounds().height * _scale;
 	var self = this;
 	var enabled = 0;
-	
+
 	init();
-	
-	function init()
-	{
+
+	function init() {
 		createCanvas();
 		createMenuIcon();
 	}
-	
-	this.enable = function ()
-	{
-		if(enabled) return;
+
+	this.enable = function () {
+		if (enabled) return;
 		enabled = 1;
 		disableMouseHandler();
 		enableMouseHandler();
-		menuIcon.set({alpha:1})
+		menuIcon.set({ alpha: 1 });
 		stage.enableMouseOver(60);
 		stage.update();
-	}
-	
-	this.disable = function (hidden)
-	{
+	};
+
+	this.disable = function (hidden) {
 		disableMouseHandler();
-		if(hidden) {
-			menuIcon.set({alpha:0})
+		if (hidden) {
+			menuIcon.set({ alpha: 0 });
 		} else {
-			menuIcon.set({alpha:1})
+			menuIcon.set({ alpha: 1 });
 		}
 		stage.update();
 		enabled = 0;
 		stage.enableMouseOver(0);
-	}
-	
-	function enableMouseHandler()
-	{
+	};
+
+	function enableMouseHandler() {
 		mouseOverHandler = menuIcon.on("mouseover", mouseOver);
 		mouseOutHandler = menuIcon.on("mouseout", mouseOut);
 		mouseClickHandler = menuIcon.on("click", mouseClick);
 	}
-	
-	function disableMouseHandler()
-	{
+
+	function disableMouseHandler() {
 		menuIcon.removeEventListener("mouseover", mouseOverHandler);
 		menuIcon.removeEventListener("mouseout", mouseOutHandler);
 		menuIcon.removeEventListener("click", mouseClickHandler);
 		stage.cursor = "default";
 		stage.update();
 	}
-	
-	function createCanvas()
-	{
-		mainMainCanvas = document.createElement('canvas');
-		mainMainCanvas.id     = "main_menu";
-		mainMainCanvas.width  = bitmapX+border*2;
-		mainMainCanvas.height = bitmapY+border*2;
+
+	function createCanvas() {
+		mainMainCanvas = document.createElement("canvas");
+		mainMainCanvas.id = "main_menu";
+		mainMainCanvas.width = bitmapX + border * 2;
+		mainMainCanvas.height = bitmapY + border * 2;
 		mainMainCanvas.willReadFrequently = true;
 
-		var left = (_screenX1 - mainMainCanvas.width - screenBorder),
-		    top  = bitmapY/2|0;
-		
+		var left = _screenX1 - mainMainCanvas.width - screenBorder,
+			top = (bitmapY / 2) | 0;
+
 		mainMainCanvas.style.left = left + "px";
-		mainMainCanvas.style.top =  top + "px";
+		mainMainCanvas.style.top = top + "px";
 		mainMainCanvas.style.position = "absolute";
 		document.body.appendChild(mainMainCanvas);
 	}
-	
-	function createMenuIcon()
-	{
+
+	function createMenuIcon() {
 		stage = new createjs.Stage(mainMainCanvas);
 		menuIcon = new createjs.Container();
 		menuBG = new createjs.Shape();
-		
-		menuBG.graphics.beginFill(mouseOverBGColor)
-			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
+
+		menuBG.graphics
+			.beginFill(mouseOverBGColor)
+			.drawRect(0, 0, bitmapX + border * 2, bitmapY + border * 2)
+			.endFill();
 		menuBG.alpha = 0;
 		menuIcon.addChild(menuBG);
 		_mainMenuBitmap.setTransform(border, border, _scale, _scale);
 		menuIcon.addChild(_mainMenuBitmap);
-		
-		menuIcon.set({alpha:0})
+
+		menuIcon.set({ alpha: 0 });
 		stage.addChild(menuIcon);
 		stage.update();
 	}
-	
-	function mouseOver()
-	{
-		if(gameState == GAME_PAUSE || //// demoDataLoading ||
-		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+
+	function mouseOver() {
+		if (
+			gameState == GAME_PAUSE || //// demoDataLoading ||
+			(gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)
+		)
+			return;
 		stage.cursor = "pointer";
 		menuBG.alpha = 1;
 		stage.update();
 	}
-	
-	function mouseOut()
-	{
+
+	function mouseOut() {
 		stage.cursor = "default";
 		menuBG.alpha = 0;
 		stage.update();
 	}
-	
-	function mouseClick()
-	{
-		if(gameState == GAME_PAUSE || //// demoDataLoading ||
-		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+
+	function mouseClick() {
+		if (
+			gameState == GAME_PAUSE || //// demoDataLoading ||
+			(gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)
+		)
+			return;
 		saveState();
 		////mainMenu(restoreState);
 		gameMenu(restoreState);
 		mouseOut();
 	}
 
-	function saveState()
-	{
+	function saveState() {
 		saveStateObj = saveKeyHandler(noKeyDown);
 		gamePause();
-		if(playMode == PLAY_EDIT) {
-			if(editLevelModified()) saveTestState();
+		if (playMode == PLAY_EDIT) {
+			if (editLevelModified()) saveTestState();
 			stopEditTicker();
 		} else {
 			stopPlayTicker();
@@ -136,11 +134,10 @@ function mainMenuIconClass( _screenX1, _screenY1, _scale, _mainMenuBitmap)
 		}
 		self.disable();
 	}
- 	
-	function restoreState()
-	{
+
+	function restoreState() {
 		restoreKeyHandler(saveStateObj);
-		if(playMode == PLAY_EDIT) {
+		if (playMode == PLAY_EDIT) {
 			startEditTicker();
 		} else {
 			startAllSpriteObj();
@@ -151,171 +148,161 @@ function mainMenuIconClass( _screenX1, _screenY1, _scale, _mainMenuBitmap)
 	}
 }
 
-function selectIconClass( _screenX1, _screenY1, _scale, _bitmap)
-{
+function selectIconClass(_screenX1, _screenY1, _scale, _bitmap) {
 	var border = 4 * _scale;
 	var selectCanvas, stage;
-	var	selectIcon, selectBG;
+	var selectIcon, selectBG;
 	var saveStateObj;
-	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
-	
+	var mouseOverHandler = null,
+		mouseOutHandler = null,
+		mouseClickHandler = null;
+
 	var bitmapX = _bitmap.getBounds().width * _scale;
-	var bitmapY = _bitmap.getBounds().height * _scale;	
+	var bitmapY = _bitmap.getBounds().height * _scale;
 	var self = this;
 	var enabled = 0;
-	
+
 	init();
-	
-	function init()
-	{
+
+	function init() {
 		createCanvas();
 		createSelectIcon();
 	}
-	
-	this.enable = function ()
-	{
-		if(enabled) return;
+
+	this.enable = function () {
+		if (enabled) return;
 		enabled = 1;
 		disableMouseHandler();
 		enableMouseHandler();
 		document.body.appendChild(selectCanvas);
-		selectIcon.set({alpha:1})
+		selectIcon.set({ alpha: 1 });
 		stage.enableMouseOver(60);
 		stage.update();
-	}
-	
-	this.disable = function (hidden)
-	{
+	};
+
+	this.disable = function (hidden) {
 		disableMouseHandler();
-		if(hidden) {
-			selectIcon.set({alpha:0})
+		if (hidden) {
+			selectIcon.set({ alpha: 0 });
 		} else {
-			selectIcon.set({alpha:1})
+			selectIcon.set({ alpha: 1 });
 		}
 		stage.update();
 		enabled = 0;
 		stage.enableMouseOver(0);
-	}
-	
-	function enableMouseHandler()
-	{
+	};
+
+	function enableMouseHandler() {
 		mouseOverHandler = selectIcon.on("mouseover", mouseOver);
 		mouseOutHandler = selectIcon.on("mouseout", mouseOut);
 		mouseClickHandler = selectIcon.on("click", mouseClick);
 	}
-	
-	function disableMouseHandler()
-	{
+
+	function disableMouseHandler() {
 		selectIcon.removeEventListener("mouseover", mouseOverHandler);
 		selectIcon.removeEventListener("mouseout", mouseOutHandler);
 		selectIcon.removeEventListener("click", mouseClickHandler);
 		stage.cursor = "default";
 		stage.update();
 	}
-	
-	function createCanvas()
-	{
-		selectCanvas = document.createElement('canvas');
-		selectCanvas.id     = "select_menu";
-		selectCanvas.width  = bitmapX+border*2;
-		selectCanvas.height = bitmapY+border*2;
+
+	function createCanvas() {
+		selectCanvas = document.createElement("canvas");
+		selectCanvas.id = "select_menu";
+		selectCanvas.width = bitmapX + border * 2;
+		selectCanvas.height = bitmapY + border * 2;
 		selectCanvas.willReadFrequently = true;
 
-		var left = (_screenX1 - selectCanvas.width - screenBorder),
-		    top  = (selectCanvas.height + bitmapY)|0;
-		
+		var left = _screenX1 - selectCanvas.width - screenBorder,
+			top = (selectCanvas.height + bitmapY) | 0;
+
 		selectCanvas.style.left = left + "px";
-		selectCanvas.style.top =  top + "px";
+		selectCanvas.style.top = top + "px";
 		selectCanvas.style.position = "absolute";
 		document.body.appendChild(selectCanvas);
 	}
-	
-	function createSelectIcon()
-	{
+
+	function createSelectIcon() {
 		stage = new createjs.Stage(selectCanvas);
 		selectIcon = new createjs.Container();
 		selectBG = new createjs.Shape();
-		
-		selectBG.graphics.beginFill(mouseOverBGColor)
-			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
+
+		selectBG.graphics
+			.beginFill(mouseOverBGColor)
+			.drawRect(0, 0, bitmapX + border * 2, bitmapY + border * 2)
+			.endFill();
 		selectBG.alpha = 0;
 		selectIcon.addChild(selectBG);
 		_bitmap.setTransform(border, border, _scale, _scale);
 		selectIcon.addChild(_bitmap);
-		
-		selectIcon.set({alpha:0})
+
+		selectIcon.set({ alpha: 0 });
 		stage.addChild(selectIcon);
 		stage.update();
 	}
-	
-	function mouseOver()
-	{
-		if(gameState == GAME_PAUSE || 
-		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+
+	function mouseOver() {
+		if (gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT))
+			return;
 		stage.cursor = "pointer";
 		selectBG.alpha = 1;
 		stage.update();
 	}
-	
-	function mouseOut()
-	{
+
+	function mouseOut() {
 		stage.cursor = "default";
 		selectBG.alpha = 0;
 		stage.update();
 	}
-	
-	function startSelectMenu()
-	{
+
+	function startSelectMenu() {
 		saveState();
 		activeSelectMenu(activeSelectPlay, restoreState);
 		mouseOut();
 	}
-	
-	function mouseClick()
-	{
-		if(gameState == GAME_PAUSE || 
-		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
-		
-		if(playMode == PLAY_EDIT && editLevelModified()) {
-			if(editLevelModified())saveTestState();
+
+	function mouseClick() {
+		if (gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT))
+			return;
+
+		if (playMode == PLAY_EDIT && editLevelModified()) {
+			if (editLevelModified()) saveTestState();
 			editConfirmAbortState(startSelectMenu);
 		} else {
 			startSelectMenu();
 		}
 	}
 
-	function activeSelectPlay(level)
-	{
-		soundStop(soundDig); 
+	function activeSelectPlay(level) {
+		soundStop(soundDig);
 		soundStop(soundFall);
-		switch(playMode) {
-		case PLAY_EDIT:
-			editSelectLevel(level);
-			break;
-		case PLAY_DEMO:
-			curLevel = level;
-			setDemoInfo();	
-			startGame();
-			break;	
-		case PLAY_MODERN:		
-			curLevel = level;
-			//playMode = PLAY_MODERN;
-			//document.onkeydown = handleKeyDown;
-			//setLastPlayMode();
-			setModernInfo();
-			startGame();
-			break;	
-		default:
-			debug("activeSelectPlay design error ! playMode = " + playMode);
-			break;	
+		switch (playMode) {
+			case PLAY_EDIT:
+				editSelectLevel(level);
+				break;
+			case PLAY_DEMO:
+				curLevel = level;
+				setDemoInfo();
+				startGame();
+				break;
+			case PLAY_MODERN:
+				curLevel = level;
+				//playMode = PLAY_MODERN;
+				//document.onkeydown = handleKeyDown;
+				//setLastPlayMode();
+				setModernInfo();
+				startGame();
+				break;
+			default:
+				debug("activeSelectPlay design error ! playMode = " + playMode);
+				break;
 		}
-	}	
+	}
 
-	function saveState()
-	{
+	function saveState() {
 		saveStateObj = saveKeyHandler(noKeyDown);
 		gamePause();
-		if(playMode == PLAY_EDIT) {
+		if (playMode == PLAY_EDIT) {
 			stopEditTicker();
 		} else {
 			stopPlayTicker();
@@ -323,11 +310,10 @@ function selectIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		}
 		self.disable();
 	}
-	
-	function restoreState()
-	{
+
+	function restoreState() {
 		restoreKeyHandler(saveStateObj);
-		if(playMode == PLAY_EDIT) {
+		if (playMode == PLAY_EDIT) {
 			startEditTicker();
 		} else {
 			startAllSpriteObj();
@@ -336,135 +322,135 @@ function selectIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		gameResume();
 		self.enable();
 	}
+
+	this.startSelectMenu = startSelectMenu;
 }
 
-function demoIconClass( _screenX1, _screenY1, _scale, _bitmap)
-{
+function demoIconClass(_screenX1, _screenY1, _scale, _bitmap) {
 	var border = 4 * _scale;
 	var canvas, stage;
-	var	iconObj, bgObj;
+	var iconObj, bgObj;
 	var saveStateObj;
-	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
-	
+	var mouseOverHandler = null,
+		mouseOutHandler = null,
+		mouseClickHandler = null;
+
 	var bitmapX = _bitmap.getBounds().width * _scale;
-	var bitmapY = _bitmap.getBounds().height * _scale;	
+	var bitmapY = _bitmap.getBounds().height * _scale;
 	var self = this;
 	var enabled = 0;
-	
+
 	init();
-	
-	function init()
-	{
+
+	function init() {
 		createCanvas();
 		createIconObj();
 	}
-	
-	this.enable = function ()
-	{
-		if(!curDemoLevelIsVaild()) {
-			self.disable(1); 
+
+	this.enable = function () {
+		if (!curDemoLevelIsVaild()) {
+			self.disable(1);
 			return;
 		}
-		if(enabled) return;
-		
+		if (enabled) return;
+
 		enabled = 1;
 		disableMouseHandler();
 		enableMouseHandler();
-		iconObj.set({alpha:1})
+		iconObj.set({ alpha: 1 });
 		stage.enableMouseOver(60);
 		stage.update();
-	}
-	
-	this.disable = function (hidden)
-	{
+	};
+
+	this.disable = function (hidden) {
 		disableMouseHandler();
-		if(hidden) {
-			iconObj.set({alpha:0});
+		if (hidden) {
+			iconObj.set({ alpha: 0 });
 		} else {
-			iconObj.set({alpha:1})
+			iconObj.set({ alpha: 1 });
 		}
 		stage.update();
 		enabled = 0;
 		stage.enableMouseOver(0);
-	}
-	
-	function enableMouseHandler()
-	{
+	};
+
+	function enableMouseHandler() {
 		mouseOverHandler = iconObj.on("mouseover", mouseOver);
 		mouseOutHandler = iconObj.on("mouseout", mouseOut);
 		mouseClickHandler = iconObj.on("click", mouseClick);
 	}
-	
-	function disableMouseHandler()
-	{
+
+	function disableMouseHandler() {
 		iconObj.removeEventListener("mouseover", mouseOverHandler);
 		iconObj.removeEventListener("mouseout", mouseOutHandler);
 		iconObj.removeEventListener("click", mouseClickHandler);
 		stage.cursor = "default";
 		stage.update();
 	}
-	
-	function createCanvas()
-	{
-		canvas = document.createElement('canvas');
+
+	function createCanvas() {
+		canvas = document.createElement("canvas");
 		canvas.id = "theme_menu";
-		canvas.width  = bitmapX+border*2;
-		canvas.height = bitmapY+border*2;
+		canvas.width = bitmapX + border * 2;
+		canvas.height = bitmapY + border * 2;
 		canvas.willReadFrequently = true;
 
-		var left = (_screenX1 - canvas.width - screenBorder),
-			top  = (canvas.height*2 + bitmapY*3/2)|0;
-		
+		var left = _screenX1 - canvas.width - screenBorder,
+			top = (canvas.height * 2 + (bitmapY * 3) / 2) | 0;
+
 		canvas.style.left = left + "px";
-		canvas.style.top =  top + "px";
+		canvas.style.top = top + "px";
 		canvas.style.position = "absolute";
 		document.body.appendChild(canvas);
 	}
-	
-	function createIconObj()
-	{
+
+	function createIconObj() {
 		stage = new createjs.Stage(canvas);
 		iconObj = new createjs.Container();
-		
+
 		//create background shape
 		bgObj = new createjs.Shape();
-		bgObj.graphics.beginFill(mouseOverBGColor)
-			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
+		bgObj.graphics
+			.beginFill(mouseOverBGColor)
+			.drawRect(0, 0, bitmapX + border * 2, bitmapY + border * 2)
+			.endFill();
 		bgObj.alpha = 0;
-		
+
 		//change bitmap size
 		_bitmap.setTransform(border, border, _scale, _scale);
-		
+
 		iconObj.addChild(bgObj);
 		iconObj.addChild(_bitmap);
-		iconObj.set({alpha:0})
-		
+		iconObj.set({ alpha: 0 });
+
 		stage.addChild(iconObj);
 		stage.update();
 	}
-	
-	function mouseOver()
-	{
-		if(gameState == GAME_PAUSE || 
-		   (gameState != GAME_START  && playMode != PLAY_DEMO && playMode != PLAY_DEMO_ONCE && playMode != PLAY_EDIT))
+
+	function mouseOver() {
+		if (
+			gameState == GAME_PAUSE ||
+			(gameState != GAME_START && playMode != PLAY_DEMO && playMode != PLAY_DEMO_ONCE && playMode != PLAY_EDIT)
+		)
 			return;
-		
+
 		stage.cursor = "pointer";
 		bgObj.alpha = 1;
 		stage.update();
 	}
-	
-	function mouseOut()
-	{
+
+	function mouseOut() {
 		stage.cursor = "default";
 		bgObj.alpha = 0;
 		stage.update();
 	}
-	
-	function mouseClick()
-	{
-		if(gameState == GAME_PAUSE || playMode == PLAY_DEMO_ONCE ||
-		   (gameState != GAME_START && playMode != PLAY_DEMO && playMode != PLAY_EDIT))
+
+	function mouseClick() {
+		if (
+			gameState == GAME_PAUSE ||
+			playMode == PLAY_DEMO_ONCE ||
+			(gameState != GAME_START && playMode != PLAY_DEMO && playMode != PLAY_EDIT)
+		)
 			return;
 
 		mouseOut();
@@ -473,14 +459,15 @@ function demoIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		anyKeyStopDemo();
 
 		startGame(1);
-		setTimeout(function() {showTipsText("HIT ANY KEY TO STOP DEMO", 3500);}, 50);
+		setTimeout(function () {
+			showTipsText("HIT ANY KEY TO STOP DEMO", 3500);
+		}, 50);
 	}
-	
-	function saveState()
-	{
+
+	function saveState() {
 		setThemeMode(curTheme);
-		if(playMode == PLAY_EDIT) {
-			if(editLevelModified()) saveTestState();
+		if (playMode == PLAY_EDIT) {
+			if (editLevelModified()) saveTestState();
 			stopEditTicker();
 		} else {
 			stopPlayTicker();
@@ -490,139 +477,136 @@ function demoIconClass( _screenX1, _screenY1, _scale, _bitmap)
 }
 
 //Celeste: this is the class for the new share button
-function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
-{
+function shareMenuIconClass(_screenX1, _screenY1, _scale, _bitmap) {
 	//_scale = _scale*2/3;
 	var border = 4 * _scale;
 	var mainMainCanvas, stage;
-	var	menuIcon, menuBG;
+	var menuIcon, menuBG;
 	var saveStateObj;
-	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
-	
+	var mouseOverHandler = null,
+		mouseOutHandler = null,
+		mouseClickHandler = null;
+
 	var bitmapX = _bitmap.getBounds().width * _scale;
-	var bitmapY = _bitmap.getBounds().height * _scale;	
+	var bitmapY = _bitmap.getBounds().height * _scale;
 	var self = this;
 	var enabled = 0;
-	
+
 	init();
-	
-	function init()
-	{
+
+	function init() {
 		createCanvas();
 		createMenuIcon();
 	}
-	
-	this.enable = function ()
-	{
-		if(enabled) return;
+
+	this.enable = function () {
+		if (enabled) return;
 		enabled = 1;
 		disableMouseHandler();
 		enableMouseHandler();
-		menuIcon.set({alpha:1})
+		menuIcon.set({ alpha: 1 });
 		stage.enableMouseOver(60);
 		stage.update();
-	}
-	
-	this.disable = function (hidden)
-	{
+	};
+
+	this.disable = function (hidden) {
 		disableMouseHandler();
-		if(hidden) {
-			menuIcon.set({alpha:0})
+		if (hidden) {
+			menuIcon.set({ alpha: 0 });
 		} else {
-			menuIcon.set({alpha:1})
+			menuIcon.set({ alpha: 1 });
 		}
 		stage.update();
 		enabled = 0;
 		stage.enableMouseOver(0);
-	}
-	
-	function enableMouseHandler()
-	{
+	};
+
+	function enableMouseHandler() {
 		mouseOverHandler = menuIcon.on("mouseover", mouseOver);
 		mouseOutHandler = menuIcon.on("mouseout", mouseOut);
 		mouseClickHandler = menuIcon.on("click", mouseClick);
 	}
-	
-	function disableMouseHandler()
-	{
+
+	function disableMouseHandler() {
 		menuIcon.removeEventListener("mouseover", mouseOverHandler);
 		menuIcon.removeEventListener("mouseout", mouseOutHandler);
 		menuIcon.removeEventListener("click", mouseClickHandler);
 		stage.cursor = "default";
 		stage.update();
 	}
-	
-	function createCanvas()
-	{
-		mainMainCanvas = document.createElement('canvas');
-		mainMainCanvas.id     = "share_menu";
-		mainMainCanvas.width  = bitmapX+border*2;
-		mainMainCanvas.height = bitmapY+border*2;
+
+	function createCanvas() {
+		mainMainCanvas = document.createElement("canvas");
+		mainMainCanvas.id = "share_menu";
+		mainMainCanvas.width = bitmapX + border * 2;
+		mainMainCanvas.height = bitmapY + border * 2;
 		mainMainCanvas.willReadFrequently = true;
 
-		var left = (_screenX1 - mainMainCanvas.width - screenBorder),
-			top  = (mainMainCanvas.height*3 + bitmapY*4/2)|0; // three icons plus 4 half-height spaces between the icons
-		
+		var left = _screenX1 - mainMainCanvas.width - screenBorder,
+			top = (mainMainCanvas.height * 3 + (bitmapY * 4) / 2) | 0; // three icons plus 4 half-height spaces between the icons
+
 		mainMainCanvas.style.left = left + "px";
-		mainMainCanvas.style.top =  top + "px";
+		mainMainCanvas.style.top = top + "px";
 		mainMainCanvas.style.position = "absolute";
 		document.body.appendChild(mainMainCanvas);
 	}
-	
-	function createMenuIcon()
-	{
+
+	function createMenuIcon() {
 		stage = new createjs.Stage(mainMainCanvas);
 		menuIcon = new createjs.Container();
 		menuBG = new createjs.Shape();
-		
-		menuBG.graphics.beginFill(mouseOverBGColor)
-			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
+
+		menuBG.graphics
+			.beginFill(mouseOverBGColor)
+			.drawRect(0, 0, bitmapX + border * 2, bitmapY + border * 2)
+			.endFill();
 		menuBG.alpha = 0;
 		menuIcon.addChild(menuBG);
 		_bitmap.setTransform(border, border, _scale, _scale);
 		menuIcon.addChild(_bitmap);
-		
-		menuIcon.set({alpha:0})
+
+		menuIcon.set({ alpha: 0 });
 		stage.addChild(menuIcon);
 		stage.update();
 	}
-	
-	function mouseOver()
-	{
-		if(gameState == GAME_PAUSE || //// demoDataLoading ||
-		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+
+	function mouseOver() {
+		if (
+			gameState == GAME_PAUSE || //// demoDataLoading ||
+			(gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)
+		)
+			return;
 		stage.cursor = "pointer";
 		menuBG.alpha = 1;
 		stage.update();
 	}
-	
-	function mouseOut()
-	{
+
+	function mouseOut() {
 		stage.cursor = "default";
 		menuBG.alpha = 0;
 		stage.update();
 	}
-	
+
 	//Celeste: this function controls what happens when the user clicks the share button
-	function mouseClick()
-	{
+	function mouseClick() {
 		//Don't do anything if the game is paused or if it's not started, not running and not in edit mode
-		if(gameState == GAME_PAUSE || 
-		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+		if (gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT))
+			return;
 
 		saveState();
 
 		const exportableLevelMap = testLevelInfo.levelMap;
-		const isEmptyLevel = exportableLevelMap.trim() === "" || exportableLevelMap.split("").every(char => char === " ");
+		const isEmptyLevel =
+			exportableLevelMap.trim() === "" || exportableLevelMap.split("").every((char) => char === " ");
 
 		// Add a special marker to preserve whitespace
-		const markedExportableMap = '|' + exportableLevelMap;
+		const markedExportableMap = "|" + exportableLevelMap;
 
 		// Show import/export prompt first
 		const importedLevelMap = prompt(
-			"Here's the current level map.\n" + 
-			"To export this level, just copy the text below.\n" + 
-			"To import a different level, paste in its level map.", 
+			"Here's the current level map.\n" +
+				"To export this level, just copy the text below.\n" +
+				"To import a different level, paste in its level map.",
 			markedExportableMap
 		);
 
@@ -633,8 +617,10 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		}
 
 		// Remove the marker and preserve whitespace
-		if (!importedLevelMap.startsWith('|')) {
-			alert("Invalid level map format. Please copy and paste the entire level map including the '|' marker at the start.");
+		if (!importedLevelMap.startsWith("|")) {
+			alert(
+				"Invalid level map format. Please copy and paste the entire level map including the '|' marker at the start."
+			);
 			restoreState();
 			return;
 		}
@@ -645,30 +631,23 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 			applyImport(cleanImportedMap);
 		} else {
 			// Show confirmation only if we're about to overwrite a non-empty modified level
-			yesNoDialog(
-				["Abort current editing?"], 
-				yesBitmap, 
-				noBitmap, 
-				mainStage, 
-				tileScale, 
-				(confirmed) => {
-					if (confirmed) {
-						applyImport(cleanImportedMap);
-					} else {
-						restoreState();
-					}
+			yesNoDialog(["Abort current editing?"], yesBitmap, noBitmap, mainStage, tileScale, (confirmed) => {
+				if (confirmed) {
+					applyImport(cleanImportedMap);
+				} else {
+					restoreState();
 				}
-			);
+			});
 		}
 
 		function applyImport(newLevelMap) {
 			// Ensure the level map has the correct dimensions while preserving whitespace
 			let formattedMap = "";
 			const totalTiles = NO_OF_TILES_X * NO_OF_TILES_Y;
-			
+
 			// Take exactly totalTiles characters from the input, preserving whitespace
 			for (let i = 0; i < totalTiles; i++) {
-				formattedMap += newLevelMap.charAt(i) || ' '; // Use space if character is missing
+				formattedMap += newLevelMap.charAt(i) || " "; // Use space if character is missing
 			}
 
 			testLevelInfo = {
@@ -677,7 +656,7 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 				pass: 0,
 				fromPlayData: -1,
 				fromLevel: -1,
-				modified: 1
+				modified: 1,
 			};
 			setTestLevel(testLevelInfo);
 			restoreState();
@@ -685,12 +664,11 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		}
 	}
 
-	function saveState()
-	{
+	function saveState() {
 		saveStateObj = saveKeyHandler(noKeyDown);
 		gamePause();
-		if(playMode == PLAY_EDIT) {
-			if(editLevelModified()) saveTestState();
+		if (playMode == PLAY_EDIT) {
+			if (editLevelModified()) saveTestState();
 			stopEditTicker();
 		} else {
 			stopPlayTicker();
@@ -698,11 +676,10 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		}
 		self.disable();
 	}
-	
-	function restoreState()
-	{
+
+	function restoreState() {
 		restoreKeyHandler(saveStateObj);
-		if(playMode == PLAY_EDIT) {
+		if (playMode == PLAY_EDIT) {
 			startEditTicker();
 		} else {
 			startAllSpriteObj();
@@ -714,145 +691,140 @@ function shareMenuIconClass( _screenX1, _screenY1, _scale, _bitmap)
 }
 
 //Celeste: this is the class for the new link button
-function linkIconClass( _screenX1, _screenY1, _scale, _bitmap)
-{
+function linkIconClass(_screenX1, _screenY1, _scale, _bitmap) {
 	//_scale = _scale*2/3;
 	var border = 4 * _scale;
 	var mainMainCanvas, stage;
-	var	menuIcon, menuBG;
+	var menuIcon, menuBG;
 	var saveStateObj;
-	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
-	
+	var mouseOverHandler = null,
+		mouseOutHandler = null,
+		mouseClickHandler = null;
+
 	var bitmapX = _bitmap.getBounds().width * _scale;
-	var bitmapY = _bitmap.getBounds().height * _scale;	
+	var bitmapY = _bitmap.getBounds().height * _scale;
 	var self = this;
 	var enabled = 0;
-	
+
 	init();
-	
-	function init()
-	{
+
+	function init() {
 		createCanvas();
 		createMenuIcon();
 	}
-	
-	this.enable = function ()
-	{
-		if(enabled) return;
+
+	this.enable = function () {
+		if (enabled) return;
 		enabled = 1;
 		disableMouseHandler();
 		enableMouseHandler();
-		menuIcon.set({alpha:1})
+		menuIcon.set({ alpha: 1 });
 		stage.enableMouseOver(60);
 		stage.update();
-	}
-	
-	this.disable = function (hidden)
-	{
+	};
+
+	this.disable = function (hidden) {
 		disableMouseHandler();
-		if(hidden) {
-			menuIcon.set({alpha:0})
+		if (hidden) {
+			menuIcon.set({ alpha: 0 });
 		} else {
-			menuIcon.set({alpha:1})
+			menuIcon.set({ alpha: 1 });
 		}
 		stage.update();
 		enabled = 0;
 		stage.enableMouseOver(0);
-	}
-	
-	function enableMouseHandler()
-	{
+	};
+
+	function enableMouseHandler() {
 		mouseOverHandler = menuIcon.on("mouseover", mouseOver);
 		mouseOutHandler = menuIcon.on("mouseout", mouseOut);
 		mouseClickHandler = menuIcon.on("click", mouseClick);
 	}
-	
-	function disableMouseHandler()
-	{
+
+	function disableMouseHandler() {
 		menuIcon.removeEventListener("mouseover", mouseOverHandler);
 		menuIcon.removeEventListener("mouseout", mouseOutHandler);
 		menuIcon.removeEventListener("click", mouseClickHandler);
 		stage.cursor = "default";
 		stage.update();
 	}
-	
-	function createCanvas()
-	{
-		mainMainCanvas = document.createElement('canvas');
-		mainMainCanvas.id     = "share_menu";
-		mainMainCanvas.width  = bitmapX+border*2;
-		mainMainCanvas.height = bitmapY+border*2;
+
+	function createCanvas() {
+		mainMainCanvas = document.createElement("canvas");
+		mainMainCanvas.id = "share_menu";
+		mainMainCanvas.width = bitmapX + border * 2;
+		mainMainCanvas.height = bitmapY + border * 2;
 		mainMainCanvas.willReadFrequently = true;
 
-		var left = (_screenX1 - mainMainCanvas.width - screenBorder),
-			top  = (mainMainCanvas.height*4 + bitmapY*5/2)|0; // four icons plus 5 half-height spaces between the icons
-		
+		var left = _screenX1 - mainMainCanvas.width - screenBorder,
+			top = (mainMainCanvas.height * 4 + (bitmapY * 5) / 2) | 0; // four icons plus 5 half-height spaces between the icons
+
 		mainMainCanvas.style.left = left + "px";
-		mainMainCanvas.style.top =  top + "px";
+		mainMainCanvas.style.top = top + "px";
 		mainMainCanvas.style.position = "absolute";
 		document.body.appendChild(mainMainCanvas);
 	}
-	
-	function createMenuIcon()
-	{
+
+	function createMenuIcon() {
 		stage = new createjs.Stage(mainMainCanvas);
 		menuIcon = new createjs.Container();
 		menuBG = new createjs.Shape();
-		
-		menuBG.graphics.beginFill(mouseOverBGColor)
-			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
+
+		menuBG.graphics
+			.beginFill(mouseOverBGColor)
+			.drawRect(0, 0, bitmapX + border * 2, bitmapY + border * 2)
+			.endFill();
 		menuBG.alpha = 0;
 		menuIcon.addChild(menuBG);
 		_bitmap.setTransform(border, border, _scale, _scale);
 		menuIcon.addChild(_bitmap);
-		
-		menuIcon.set({alpha:0})
+
+		menuIcon.set({ alpha: 0 });
 		stage.addChild(menuIcon);
 		stage.update();
 	}
-	
-	function mouseOver()
-	{
-		if(gameState == GAME_PAUSE || //// demoDataLoading ||
-		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+
+	function mouseOver() {
+		if (
+			gameState == GAME_PAUSE || //// demoDataLoading ||
+			(gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)
+		)
+			return;
 		stage.cursor = "pointer";
 		menuBG.alpha = 1;
 		stage.update();
 	}
-	
-	function mouseOut()
-	{
+
+	function mouseOut() {
 		stage.cursor = "default";
 		menuBG.alpha = 0;
 		stage.update();
 	}
-	
+
 	//Celeste: this function controls what happens when the user clicks the link button
-	function mouseClick()
-	{
-		if(gameState == GAME_PAUSE || 
-		   (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
-		
+	function mouseClick() {
+		if (gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT))
+			return;
+
 		// Get current map
 		const currentMap = copyEditingMap();
-		
+
 		// Convert to URL-safe format
 		const urlSafeMap = toUrlSafeMap(currentMap);
-		
+
 		// Generate shareable URL with current domain and map data
 		const baseUrl = window.location.origin + window.location.pathname;
 		const shareableUrl = `${baseUrl}?map=${urlSafeMap}`;
-		
+
 		// Show the shareable link
 		prompt("Here's a shareable link to the current level:", shareableUrl);
 	}
 
-	function saveState()
-	{
+	function saveState() {
 		saveStateObj = saveKeyHandler(noKeyDown);
 		gamePause();
-		if(playMode == PLAY_EDIT) {
-			if(editLevelModified()) saveTestState();
+		if (playMode == PLAY_EDIT) {
+			if (editLevelModified()) saveTestState();
 			stopEditTicker();
 		} else {
 			stopPlayTicker();
@@ -860,11 +832,10 @@ function linkIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		}
 		self.disable();
 	}
-	
-	function restoreState()
-	{
+
+	function restoreState() {
 		restoreKeyHandler(saveStateObj);
-		if(playMode == PLAY_EDIT) {
+		if (playMode == PLAY_EDIT) {
 			startEditTicker();
 		} else {
 			startAllSpriteObj();
@@ -875,422 +846,416 @@ function linkIconClass( _screenX1, _screenY1, _scale, _bitmap)
 	}
 }
 
-function soundIconClass( _screenX1, _screenY1, _scale, _soundOnBitmap, _soundOffBitmap)
-{
+function soundIconClass(_screenX1, _screenY1, _scale, _soundOnBitmap, _soundOffBitmap) {
 	var border = 4 * _scale;
 	var canvas, stage;
-	var	iconObj, bgObj;
+	var iconObj, bgObj;
 	var saveStateObj;
-	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
-	
+	var mouseOverHandler = null,
+		mouseOutHandler = null,
+		mouseClickHandler = null;
+
 	var bitmapX = _soundOnBitmap.getBounds().width * _scale;
-	var bitmapY = _soundOnBitmap.getBounds().height * _scale;	
+	var bitmapY = _soundOnBitmap.getBounds().height * _scale;
 	var self = this;
 	var enabled = 0;
-	
-	
-	function init()
-	{
+
+	function init() {
 		createCanvas();
 		createIconObj();
 	}
-	
-	this.enable = function ()
-	{
-		if(enabled) return;
+
+	this.enable = function () {
+		if (enabled) return;
 		enabled = 1;
 		disableMouseHandler();
 		enableMouseHandler();
-		iconObj.set({alpha:1})
+		iconObj.set({ alpha: 1 });
 		stage.enableMouseOver(60);
 		stage.update();
-	}
-	
-	this.disable = function (hidden)
-	{
+	};
+
+	this.disable = function (hidden) {
 		disableMouseHandler();
-		if(hidden) {
-			iconObj.set({alpha:0});
+		if (hidden) {
+			iconObj.set({ alpha: 0 });
 		} else {
-			iconObj.set({alpha:1})
+			iconObj.set({ alpha: 1 });
 		}
 		stage.update();
 		enabled = 0;
 		stage.enableMouseOver(0);
-	}
+	};
 
-	function enableMouseHandler()
-	{
+	function enableMouseHandler() {
 		mouseOverHandler = iconObj.on("mouseover", mouseOver);
 		mouseOutHandler = iconObj.on("mouseout", mouseOut);
 		mouseClickHandler = iconObj.on("click", mouseClick);
 	}
-	
-	function disableMouseHandler()
-	{
+
+	function disableMouseHandler() {
 		iconObj.removeEventListener("mouseover", mouseOverHandler);
 		iconObj.removeEventListener("mouseout", mouseOutHandler);
 		iconObj.removeEventListener("click", mouseClickHandler);
 		stage.cursor = "default";
 		stage.update();
 	}
-	
-	function createCanvas()
-	{
-		canvas = document.createElement('canvas');
+
+	function createCanvas() {
+		canvas = document.createElement("canvas");
 		canvas.id = "theme_menu";
-		canvas.width  = bitmapX+border*2;
-		canvas.height = bitmapY+border*2;
+		canvas.width = bitmapX + border * 2;
+		canvas.height = bitmapY + border * 2;
 		canvas.willReadFrequently = true;
 
-		var left = (_screenX1 - canvas.width - screenBorder),
+		var left = _screenX1 - canvas.width - screenBorder,
 			//top  = (_screenY1 - bitmapY*7)|0;
-			top  = (_screenY1 - bitmapY*8.6)|0;
-		
+			top = (_screenY1 - bitmapY * 8.6) | 0;
+
 		canvas.style.left = left + "px";
-		canvas.style.top =  top + "px";
+		canvas.style.top = top + "px";
 		canvas.style.position = "absolute";
 		document.body.appendChild(canvas);
 	}
-	
-	this.updateSoundImage = function()
-	{
+
+	this.updateSoundImage = function () {
 		iconObj.removeAllChildren();
 		iconObj.addChild(bgObj);
-		
-		if(playMode == PLAY_DEMO || playMode == PLAY_DEMO_ONCE) {
-			if(demoSoundOff) iconObj.addChild(_soundOffBitmap);
+
+		if (playMode == PLAY_DEMO || playMode == PLAY_DEMO_ONCE) {
+			if (demoSoundOff) iconObj.addChild(_soundOffBitmap);
 			else iconObj.addChild(_soundOnBitmap);
 		} else {
-			if(soundOff) iconObj.addChild(_soundOffBitmap);
+			if (soundOff) iconObj.addChild(_soundOffBitmap);
 			else iconObj.addChild(_soundOnBitmap);
 		}
 		stage.update();
-	}	
-	
-	function createIconObj()
-	{
+	};
+
+	function createIconObj() {
 		stage = new createjs.Stage(canvas);
 		iconObj = new createjs.Container();
-		
+
 		//create background shape
 		bgObj = new createjs.Shape();
-		bgObj.graphics.beginFill(mouseOverBGColor)
-			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
+		bgObj.graphics
+			.beginFill(mouseOverBGColor)
+			.drawRect(0, 0, bitmapX + border * 2, bitmapY + border * 2)
+			.endFill();
 		bgObj.alpha = 0;
-		
+
 		//change bitmap size
 		_soundOnBitmap.setTransform(border, border, _scale, _scale);
 		_soundOffBitmap.setTransform(border, border, _scale, _scale);
-		
-		iconObj.set({alpha:0})
-		
+
+		iconObj.set({ alpha: 0 });
+
 		stage.addChild(iconObj);
 		self.updateSoundImage();
 		stage.update();
 	}
 
-	function mouseOver()
-	{
-		if( gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING) ) return;
-		   
+	function mouseOver() {
+		if (gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING)) return;
+
 		stage.cursor = "pointer";
 		bgObj.alpha = 1;
 		stage.update();
 	}
-	
-	function mouseOut()
-	{
+
+	function mouseOut() {
 		stage.cursor = "default";
 		bgObj.alpha = 0;
 		stage.update();
 	}
-	
-	function mouseClick()
-	{
-		if( gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING) ) return;
 
-		if(playMode == PLAY_DEMO || playMode == PLAY_DEMO_ONCE) {
-			if((demoSoundOff ^= 1)) { soundStop(soundDig); soundStop(soundFall); }
+	function mouseClick() {
+		if (gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING)) return;
+
+		if (playMode == PLAY_DEMO || playMode == PLAY_DEMO_ONCE) {
+			if ((demoSoundOff ^= 1)) {
+				soundStop(soundDig);
+				soundStop(soundFall);
+			}
 		} else {
-			if((soundOff ^= 1)) { soundStop(soundDig); soundStop(soundFall); }
+			if ((soundOff ^= 1)) {
+				soundStop(soundDig);
+				soundStop(soundFall);
+			}
 		}
-		
+
 		self.updateSoundImage();
 		mouseOut();
-	}	
-	
+	}
+
 	init();
 }
 
-function repeatActionIconClass( _screenX1, _screenY1, _scale, _repeatActionOnBitmap, _repeatActionOffBitmap)
-{
+function repeatActionIconClass(_screenX1, _screenY1, _scale, _repeatActionOnBitmap, _repeatActionOffBitmap) {
 	var border = 4 * _scale;
 	var canvas, stage;
-	var	iconObj, bgObj;
+	var iconObj, bgObj;
 	var saveStateObj;
-	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
-	
+	var mouseOverHandler = null,
+		mouseOutHandler = null,
+		mouseClickHandler = null;
+
 	var bitmapX = _repeatActionOnBitmap.getBounds().width * _scale;
-	var bitmapY = _repeatActionOnBitmap.getBounds().height * _scale;	
+	var bitmapY = _repeatActionOnBitmap.getBounds().height * _scale;
 	var self = this;
 	var enabled = 0;
-	
-	function init()
-	{
+
+	function init() {
 		createCanvas();
 		createIconObj();
 	}
-	
-	this.enable = function ()
-	{
-		if(enabled) return;
+
+	this.enable = function () {
+		if (enabled) return;
 		enabled = 1;
 		disableMouseHandler();
 		enableMouseHandler();
-		iconObj.set({alpha:1})
+		iconObj.set({ alpha: 1 });
 		stage.enableMouseOver(60);
 		stage.update();
-	}
-	
-	this.disable = function (hidden)
-	{
+	};
+
+	this.disable = function (hidden) {
 		disableMouseHandler();
-		if(hidden) {
-			iconObj.set({alpha:0});
+		if (hidden) {
+			iconObj.set({ alpha: 0 });
 		} else {
-			iconObj.set({alpha:1})
+			iconObj.set({ alpha: 1 });
 		}
 		stage.update();
 		enabled = 0;
 		stage.enableMouseOver(0);
-	}
+	};
 
-	function enableMouseHandler()
-	{
+	function enableMouseHandler() {
 		mouseOverHandler = iconObj.on("mouseover", mouseOver);
 		mouseOutHandler = iconObj.on("mouseout", mouseOut);
 		mouseClickHandler = iconObj.on("click", mouseClick);
 	}
-	
-	function disableMouseHandler()
-	{
+
+	function disableMouseHandler() {
 		iconObj.removeEventListener("mouseover", mouseOverHandler);
 		iconObj.removeEventListener("mouseout", mouseOutHandler);
 		iconObj.removeEventListener("click", mouseClickHandler);
 		stage.cursor = "default";
 		stage.update();
 	}
-	
-	function createCanvas()
-	{
-		canvas = document.createElement('canvas');
+
+	function createCanvas() {
+		canvas = document.createElement("canvas");
 		canvas.id = "theme_menu";
-		canvas.width  = bitmapX+border*2;
-		canvas.height = bitmapY+border*2;
+		canvas.width = bitmapX + border * 2;
+		canvas.height = bitmapY + border * 2;
 		canvas.willReadFrequently = true;
 
-		var left = (_screenX1 - canvas.width - screenBorder),
-		    top  = (_screenY1 - bitmapY*6.4)|0;
-		
+		var left = _screenX1 - canvas.width - screenBorder,
+			top = (_screenY1 - bitmapY * 6.4) | 0;
+
 		canvas.style.left = left + "px";
-		canvas.style.top =  top + "px";
+		canvas.style.top = top + "px";
 		canvas.style.position = "absolute";
 		document.body.appendChild(canvas);
 	}
-	
-	this.updateRepeatActionImage = function()
-	{
+
+	this.updateRepeatActionImage = function () {
 		iconObj.removeAllChildren();
 		iconObj.addChild(bgObj);
-		
-		if(repeatAction) iconObj.addChild(_repeatActionOnBitmap);
+
+		if (repeatAction) iconObj.addChild(_repeatActionOnBitmap);
 		else iconObj.addChild(_repeatActionOffBitmap);
 		stage.update();
-	}	
-	
-	function createIconObj()
-	{
+	};
+
+	function createIconObj() {
 		stage = new createjs.Stage(canvas);
 		iconObj = new createjs.Container();
-		
+
 		//create background shape
 		bgObj = new createjs.Shape();
-		bgObj.graphics.beginFill(mouseOverBGColor)
-			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
+		bgObj.graphics
+			.beginFill(mouseOverBGColor)
+			.drawRect(0, 0, bitmapX + border * 2, bitmapY + border * 2)
+			.endFill();
 		bgObj.alpha = 0;
-		
+
 		//change bitmap size
 		_repeatActionOnBitmap.setTransform(border, border, _scale, _scale);
 		_repeatActionOffBitmap.setTransform(border, border, _scale, _scale);
-		
-		iconObj.set({alpha:0})
-		
+
+		iconObj.set({ alpha: 0 });
+
 		stage.addChild(iconObj);
 		self.updateRepeatActionImage();
 		stage.update();
 	}
-	
-	function mouseOver()
-	{
-		if(gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING) ||
-		   playMode == PLAY_DEMO || playMode == PLAY_DEMO_ONCE || playMode == PLAY_EDIT) return;
-		   
+
+	function mouseOver() {
+		if (
+			gameState == GAME_PAUSE ||
+			(gameState != GAME_START && gameState != GAME_RUNNING) ||
+			playMode == PLAY_DEMO ||
+			playMode == PLAY_DEMO_ONCE ||
+			playMode == PLAY_EDIT
+		)
+			return;
+
 		stage.cursor = "pointer";
 		bgObj.alpha = 1;
 		stage.update();
 	}
-	
-	function mouseOut()
-	{
+
+	function mouseOut() {
 		stage.cursor = "default";
 		bgObj.alpha = 0;
 		stage.update();
 	}
-	
-	function mouseClick()
-	{
-		if(gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING) ||
-		   playMode == PLAY_DEMO || playMode == PLAY_DEMO_ONCE || playMode == PLAY_EDIT) return;
-		
+
+	function mouseClick() {
+		if (
+			gameState == GAME_PAUSE ||
+			(gameState != GAME_START && gameState != GAME_RUNNING) ||
+			playMode == PLAY_DEMO ||
+			playMode == PLAY_DEMO_ONCE ||
+			playMode == PLAY_EDIT
+		)
+			return;
+
 		toggleRepeatAction();
 		self.updateRepeatActionImage();
 		mouseOut();
-	}	
-	
+	}
+
 	init();
 }
 
-function infoIconClass( _screenX1, _screenY1, _scale, _bitmap)
-{
+function infoIconClass(_screenX1, _screenY1, _scale, _bitmap) {
 	var border = 4 * _scale;
 	var canvas, stage;
-	var	iconObj, bgObj;
+	var iconObj, bgObj;
 	var saveStateObj;
-	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
-	
+	var mouseOverHandler = null,
+		mouseOutHandler = null,
+		mouseClickHandler = null;
+
 	var bitmapX = _bitmap.getBounds().width * _scale;
-	var bitmapY = _bitmap.getBounds().height * _scale;	
+	var bitmapY = _bitmap.getBounds().height * _scale;
 	var self = this;
 	var enabled = 0;
-	
-	
-	function init()
-	{
+
+	function init() {
 		createCanvas();
 		createIconObj();
 	}
-	
-	this.enable = function ()
-	{
-		if(enabled) return;
+
+	this.enable = function () {
+		if (enabled) return;
 		enabled = 1;
 		disableMouseHandler();
 		enableMouseHandler();
-		iconObj.set({alpha:1})
+		iconObj.set({ alpha: 1 });
 		stage.enableMouseOver(60);
 		stage.update();
-	}
-	
-	this.disable = function (hidden)
-	{
+	};
+
+	this.disable = function (hidden) {
 		disableMouseHandler();
-		if(hidden) {
-			iconObj.set({alpha:0});
+		if (hidden) {
+			iconObj.set({ alpha: 0 });
 		} else {
-			iconObj.set({alpha:1})
+			iconObj.set({ alpha: 1 });
 		}
 		stage.update();
 		enabled = 0;
 		stage.enableMouseOver(0);
-	}
+	};
 
-	function enableMouseHandler()
-	{
+	function enableMouseHandler() {
 		mouseOverHandler = iconObj.on("mouseover", mouseOver);
 		mouseOutHandler = iconObj.on("mouseout", mouseOut);
 		mouseClickHandler = iconObj.on("click", mouseClick);
 	}
-	
-	function disableMouseHandler()
-	{
+
+	function disableMouseHandler() {
 		iconObj.removeEventListener("mouseover", mouseOverHandler);
 		iconObj.removeEventListener("mouseout", mouseOutHandler);
 		iconObj.removeEventListener("click", mouseClickHandler);
 		stage.cursor = "default";
 		stage.update();
 	}
-	
-	function createCanvas()
-	{
-		canvas = document.createElement('canvas');
+
+	function createCanvas() {
+		canvas = document.createElement("canvas");
 		canvas.id = "info_menu";
-		canvas.width  = bitmapX+border*2;
-		canvas.height = bitmapY+border*2;
+		canvas.width = bitmapX + border * 2;
+		canvas.height = bitmapY + border * 2;
 		canvas.willReadFrequently = true;
 
-		var left = (_screenX1 - canvas.width - screenBorder),
-		    top  = (_screenY1 - bitmapY*4.8);
-		
+		var left = _screenX1 - canvas.width - screenBorder,
+			top = _screenY1 - bitmapY * 4.8;
+
 		canvas.style.left = left + "px";
-		canvas.style.top =  top + "px";
+		canvas.style.top = top + "px";
 		canvas.style.position = "absolute";
 		document.body.appendChild(canvas);
 	}
-	
-	function createIconObj()
-	{
+
+	function createIconObj() {
 		stage = new createjs.Stage(canvas);
 		iconObj = new createjs.Container();
-		
+
 		//create background shape
 		bgObj = new createjs.Shape();
-		bgObj.graphics.beginFill(mouseOverBGColor)
-			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
+		bgObj.graphics
+			.beginFill(mouseOverBGColor)
+			.drawRect(0, 0, bitmapX + border * 2, bitmapY + border * 2)
+			.endFill();
 		bgObj.alpha = 0;
-		
+
 		//change bitmap size
 		_bitmap.setTransform(border, border, _scale, _scale);
-		
+
 		iconObj.addChild(bgObj);
 		iconObj.addChild(_bitmap);
-		
-		iconObj.set({alpha:0})
-		
+
+		iconObj.set({ alpha: 0 });
+
 		stage.addChild(iconObj);
 		stage.update();
 	}
-	
-	function mouseOver()
-	{
-		if(gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
-		
+
+	function mouseOver() {
+		if (gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT))
+			return;
+
 		stage.cursor = "pointer";
 		bgObj.alpha = 1;
 		stage.update();
 	}
-	
-	function mouseOut()
-	{
+
+	function mouseOut() {
 		stage.cursor = "default";
 		bgObj.alpha = 0;
 		stage.update();
 	}
-	
-	function mouseClick()
-	{
-		if(gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+
+	function mouseClick() {
+		if (gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT))
+			return;
 		saveState();
 		infoMenu(restoreState, null);
 		mouseOut();
-	}	
-	
-	function saveState()
-	{
+	}
+
+	function saveState() {
 		saveStateObj = saveKeyHandler(noKeyDown);
 		gamePause();
-		if(playMode == PLAY_EDIT) {
-			if(editLevelModified()) saveTestState();
+		if (playMode == PLAY_EDIT) {
+			if (editLevelModified()) saveTestState();
 			stopEditTicker();
 		} else {
 			stopPlayTicker();
@@ -1298,11 +1263,10 @@ function infoIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		}
 		self.disable();
 	}
-	
-	function restoreState()
-	{
+
+	function restoreState() {
 		restoreKeyHandler(saveStateObj);
-		if(playMode == PLAY_EDIT) {
+		if (playMode == PLAY_EDIT) {
 			startEditTicker();
 		} else {
 			startAllSpriteObj();
@@ -1310,140 +1274,133 @@ function infoIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		}
 		gameResume();
 		self.enable();
-	}	
+	}
 	init();
 }
 
-function helpIconClass( _screenX1, _screenY1, _scale, _bitmap)
-{
+function helpIconClass(_screenX1, _screenY1, _scale, _bitmap) {
 	var border = 4 * _scale;
 	var canvas, stage;
-	var	iconObj, bgObj;
+	var iconObj, bgObj;
 	var saveStateObj;
-	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
-	
+	var mouseOverHandler = null,
+		mouseOutHandler = null,
+		mouseClickHandler = null;
+
 	var bitmapX = _bitmap.getBounds().width * _scale;
-	var bitmapY = _bitmap.getBounds().height * _scale;	
+	var bitmapY = _bitmap.getBounds().height * _scale;
 	var self = this;
 	var enabled = 0;
-	
-	
-	function init()
-	{
+
+	function init() {
 		createCanvas();
 		createIconObj();
 	}
-	
-	this.enable = function ()
-	{
-		if(enabled) return;
+
+	this.enable = function () {
+		if (enabled) return;
 		enabled = 1;
 		disableMouseHandler();
 		enableMouseHandler();
-		iconObj.set({alpha:1})
+		iconObj.set({ alpha: 1 });
 		stage.enableMouseOver(60);
 		stage.update();
-	}
-	
-	this.disable = function (hidden)
-	{
+	};
+
+	this.disable = function (hidden) {
 		disableMouseHandler();
-		if(hidden) {
-			iconObj.set({alpha:0});
+		if (hidden) {
+			iconObj.set({ alpha: 0 });
 		} else {
-			iconObj.set({alpha:1})
+			iconObj.set({ alpha: 1 });
 		}
 		stage.update();
 		enabled = 0;
 		stage.enableMouseOver(0);
-	}
+	};
 
-	function enableMouseHandler()
-	{
+	function enableMouseHandler() {
 		mouseOverHandler = iconObj.on("mouseover", mouseOver);
 		mouseOutHandler = iconObj.on("mouseout", mouseOut);
 		mouseClickHandler = iconObj.on("click", mouseClick);
 	}
-	
-	function disableMouseHandler()
-	{
+
+	function disableMouseHandler() {
 		iconObj.removeEventListener("mouseover", mouseOverHandler);
 		iconObj.removeEventListener("mouseout", mouseOutHandler);
 		iconObj.removeEventListener("click", mouseClickHandler);
 		stage.cursor = "default";
 		stage.update();
 	}
-	
-	function createCanvas()
-	{
-		canvas = document.createElement('canvas');
+
+	function createCanvas() {
+		canvas = document.createElement("canvas");
 		canvas.id = "help_menu";
-		canvas.width  = bitmapX+border*2;
-		canvas.height = bitmapY+border*2;
+		canvas.width = bitmapX + border * 2;
+		canvas.height = bitmapY + border * 2;
 		canvas.willReadFrequently = true;
 
-		var left = (_screenX1 - canvas.width - screenBorder),
-		    top  = (_screenY1 - bitmapY*3.2);
-		
+		var left = _screenX1 - canvas.width - screenBorder,
+			top = _screenY1 - bitmapY * 3.2;
+
 		canvas.style.left = left + "px";
-		canvas.style.top =  top + "px";
+		canvas.style.top = top + "px";
 		canvas.style.position = "absolute";
 		document.body.appendChild(canvas);
 	}
-	
-	function createIconObj()
-	{
+
+	function createIconObj() {
 		stage = new createjs.Stage(canvas);
 		iconObj = new createjs.Container();
-		
+
 		//create background shape
 		bgObj = new createjs.Shape();
-		bgObj.graphics.beginFill(mouseOverBGColor)
-			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
+		bgObj.graphics
+			.beginFill(mouseOverBGColor)
+			.drawRect(0, 0, bitmapX + border * 2, bitmapY + border * 2)
+			.endFill();
 		bgObj.alpha = 0;
-		
+
 		//change bitmap size
 		_bitmap.setTransform(border, border, _scale, _scale);
-		
+
 		iconObj.addChild(bgObj);
 		iconObj.addChild(_bitmap);
-		
-		iconObj.set({alpha:0})
-		
+
+		iconObj.set({ alpha: 0 });
+
 		stage.addChild(iconObj);
 		stage.update();
 	}
-	
-	function mouseOver()
-	{
-		if(gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
-		
+
+	function mouseOver() {
+		if (gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT))
+			return;
+
 		stage.cursor = "pointer";
 		bgObj.alpha = 1;
 		stage.update();
 	}
-	
-	function mouseOut()
-	{
+
+	function mouseOut() {
 		stage.cursor = "default";
 		bgObj.alpha = 0;
 		stage.update();
 	}
-	
-	function mouseClick()
-	{
-		if(gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT)) return;
+
+	function mouseClick() {
+		if (gameState == GAME_PAUSE || (gameState != GAME_START && gameState != GAME_RUNNING && playMode != PLAY_EDIT))
+			return;
 		saveState();
-		helpMenu(restoreState); 
+		helpMenu(restoreState);
 		mouseOut();
-	}	
-	
-	function saveState()
-	{
+	}
+
+	function saveState() {
 		saveStateObj = saveKeyHandler(noKeyDown);
 		gamePause();
-		if(playMode == PLAY_EDIT) {
-			if(editLevelModified()) saveTestState();
+		if (playMode == PLAY_EDIT) {
+			if (editLevelModified()) saveTestState();
 			stopEditTicker();
 		} else {
 			stopPlayTicker();
@@ -1451,11 +1408,10 @@ function helpIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		}
 		self.disable();
 	}
-	
-	function restoreState()
-	{
+
+	function restoreState() {
 		restoreKeyHandler(saveStateObj);
-		if(playMode == PLAY_EDIT) {
+		if (playMode == PLAY_EDIT) {
 			startEditTicker();
 		} else {
 			startAllSpriteObj();
@@ -1463,173 +1419,162 @@ function helpIconClass( _screenX1, _screenY1, _scale, _bitmap)
 		}
 		gameResume();
 		self.enable();
-	}	
+	}
 	init();
-
 }
 
-function themeIconClass( _screenX1, _screenY1, _scale, _themeBitmapApple2, _themeBitmapC64)
-{
+function themeIconClass(_screenX1, _screenY1, _scale, _themeBitmapApple2, _themeBitmapC64) {
 	var border = 4 * _scale;
 	var themeCanvas, stage;
-	var	themeIcon, themeBG;
+	var themeIcon, themeBG;
 	var saveStateObj;
-	var mouseOverHandler = null, mouseOutHandler = null, mouseClickHandler = null;
-	
+	var mouseOverHandler = null,
+		mouseOutHandler = null,
+		mouseClickHandler = null;
+
 	var bitmapX = _themeBitmapApple2.getBounds().width * _scale;
-	var bitmapY = _themeBitmapApple2.getBounds().height * _scale;	
+	var bitmapY = _themeBitmapApple2.getBounds().height * _scale;
 	var self = this;
 	var enabled = 0;
-	
+
 	var outColor = backgroundColor;
-	
+
 	init();
-	
-	function init()
-	{
+
+	function init() {
 		createCanvas();
 		createThemeIcon();
 	}
-	
-	this.enable = function ()
-	{
-		if(enabled) return;
+
+	this.enable = function () {
+		if (enabled) return;
 		enabled = 1;
 		disableMouseHandler();
 		enableMouseHandler();
-		themeIcon.set({alpha:1})
+		themeIcon.set({ alpha: 1 });
 		stage.enableMouseOver(60);
 		stage.update();
-	}
-	
-	this.disable = function (hidden)
-	{
+	};
+
+	this.disable = function (hidden) {
 		disableMouseHandler();
-		if(hidden) {
-			themeIcon.set({alpha:0});
+		if (hidden) {
+			themeIcon.set({ alpha: 0 });
 		} else {
-			themeIcon.set({alpha:1})
+			themeIcon.set({ alpha: 1 });
 		}
 		stage.update();
 		enabled = 0;
 		stage.enableMouseOver(0);
-	}
-	
-	function enableMouseHandler()
-	{
+	};
+
+	function enableMouseHandler() {
 		mouseOverHandler = themeIcon.on("mouseover", mouseOver);
 		mouseOutHandler = themeIcon.on("mouseout", mouseOut);
 		mouseClickHandler = themeIcon.on("click", mouseClick);
 	}
-	
-	function disableMouseHandler()
-	{
+
+	function disableMouseHandler() {
 		themeIcon.removeEventListener("mouseover", mouseOverHandler);
 		themeIcon.removeEventListener("mouseout", mouseOutHandler);
 		themeIcon.removeEventListener("click", mouseClickHandler);
 		stage.cursor = "default";
 		stage.update();
 	}
-	
-	function createCanvas()
-	{
-		themeCanvas = document.createElement('canvas');
+
+	function createCanvas() {
+		themeCanvas = document.createElement("canvas");
 		themeCanvas.id = "theme_menu";
-		themeCanvas.width  = bitmapX+border*2;
-		themeCanvas.height = bitmapY+border*2;
+		themeCanvas.width = bitmapX + border * 2;
+		themeCanvas.height = bitmapY + border * 2;
 		themeCanvas.willReadFrequently = true;
-		
-		var left = (_screenX1 - themeCanvas.width - screenBorder),
-		    top  = (_screenY1 - bitmapY*1.5);
-		
+
+		var left = _screenX1 - themeCanvas.width - screenBorder,
+			top = _screenY1 - bitmapY * 1.5;
+
 		themeCanvas.style.left = left + "px";
-		themeCanvas.style.top =  top + "px";
+		themeCanvas.style.top = top + "px";
 		themeCanvas.style.position = "absolute";
 		document.body.appendChild(themeCanvas);
 	}
-	
-	function createThemeIcon()
-	{
+
+	function createThemeIcon() {
 		stage = new createjs.Stage(themeCanvas);
 		themeIcon = new createjs.Container();
-		
+
 		//create background shape
 		themeBG = new createjs.Shape();
-		themeBG.graphics.beginFill(outColor)
-			      .drawRect(0, 0, bitmapX+border*2, bitmapY+border*2).endFill();
+		themeBG.graphics
+			.beginFill(outColor)
+			.drawRect(0, 0, bitmapX + border * 2, bitmapY + border * 2)
+			.endFill();
 		//themeBG.alpha = 0;
-		
+
 		//change bitmap size
 		_themeBitmapApple2.setTransform(border, border, _scale, _scale);
 		_themeBitmapC64.setTransform(border, border, _scale, _scale);
-		
-		themeIcon.set({alpha:0})
+
+		themeIcon.set({ alpha: 0 });
 		stage.addChild(themeIcon);
 		updateThemeImage(0);
 	}
-	
-	function updateThemeImage(showTips)
-	{
+
+	function updateThemeImage(showTips) {
 		themeIcon.removeAllChildren();
 		themeIcon.addChild(themeBG);
-		
-		if(curTheme == THEME_APPLE2) {
+
+		if (curTheme == THEME_APPLE2) {
 			themeIcon.addChild(_themeBitmapApple2);
 			//if(showTips) setTimeout(function() {showTipsText("APPLE-II THEME MODE", 2500);}, 50);
 		} else {
 			themeIcon.addChild(_themeBitmapC64);
 			//if(showTips) setTimeout(function() {showTipsText("C64 THEME MODE", 2500);}, 50);
 		}
-		
+
 		stage.update();
 	}
-	
-	function mouseOver()
-	{
-		if(gameState == GAME_PAUSE || (gameState == GAME_WAITING && playMode != PLAY_EDIT)) return;
+
+	function mouseOver() {
+		if (gameState == GAME_PAUSE || (gameState == GAME_WAITING && playMode != PLAY_EDIT)) return;
 		stage.cursor = "pointer";
 		stage.update();
 	}
-	
-	function mouseOut()
-	{
+
+	function mouseOut() {
 		stage.cursor = "default";
 		stage.update();
 	}
 
-	function mouseClick()
-	{
-		if(gameState == GAME_PAUSE || (gameState == GAME_WAITING && playMode != PLAY_EDIT)) return;
-		curTheme = (curTheme == THEME_APPLE2?THEME_C64:THEME_APPLE2);
-		
+	function mouseClick() {
+		if (gameState == GAME_PAUSE || (gameState == GAME_WAITING && playMode != PLAY_EDIT)) return;
+		curTheme = curTheme == THEME_APPLE2 ? THEME_C64 : THEME_APPLE2;
+
 		saveState();
 
-		soundStop(soundDig); 
+		soundStop(soundDig);
 		soundStop(soundFall);
-	
+
 		themeDataReset(1);
 		updateThemeImage(1);
 		themeColorIconUpdate();
-		
-		if(playMode == PLAY_EDIT) {
-			startEditMode();		
+
+		if (playMode == PLAY_EDIT) {
+			startEditMode();
 		} else {
 			changeThemeScreen(); //real time change theme screen
 		}
 	}
-	
-	function saveState()
-	{
+
+	function saveState() {
 		setThemeMode(curTheme);
-		if(playMode == PLAY_EDIT) {
-			if(editLevelModified()) saveTestState();
+		if (playMode == PLAY_EDIT) {
+			if (editLevelModified()) saveTestState();
 			stopEditTicker();
 		}
 	}
 }
 
-function themeColorIconUpdate()
-{
+function themeColorIconUpdate() {
 	themeColorObj.themeChange();
 }
 
@@ -1637,113 +1582,107 @@ function themeColorIconUpdate()
 // BEGIN: Change Theme Screen real time
 //======================================
 
-function changeThemeScreen()
-{
+function changeThemeScreen() {
 	rebuildMap();
-	
+
 	//Change runner theme
 	runner.sprite.spriteSheet = runnerData;
-	
+
 	//change guard theme
-	for(var i = 0; i < guardCount; i++) {
-		if(redhatMode && guard[i].hasGold > 0)
-			guard[i].sprite.spriteSheet = redhatData;
-		else
-			guard[i].sprite.spriteSheet = guardData;
+	for (var i = 0; i < guardCount; i++) {
+		if (redhatMode && guard[i].hasGold > 0) guard[i].sprite.spriteSheet = redhatData;
+		else guard[i].sprite.spriteSheet = guardData;
 	}
-	
+
 	//change holeObj theme
 	holeObj.sprite.spriteSheet = holeData;
-	
+
 	//change fillHoleObj theme
-	for(var i = 0; i < fillHoleObj.length; i++) {
+	for (var i = 0; i < fillHoleObj.length; i++) {
 		fillHoleObj[i].spriteSheet = holeData;
 	}
-	
+
 	moveSprite2Top();
-	
+
 	clearGround();
 	clearInfo();
 	initInfoVariable();
 	buildGroundInfo();
 }
 
-function rebuildMap() 
-{
+function rebuildMap() {
 	var curTile;
-	
-	for(var x = 0; x < NO_OF_TILES_X; x++) {
-		for(var y = 0; y < NO_OF_TILES_Y; y++) {
-			switch(map[x][y].base) {
-			default:		
-			case EMPTY_T: //empty		
-				continue;
-			case BLOCK_T: //Normal Brick		
-				curTile = getThemeBitmap("brick");		
-				if(map[x][y].bitmap.alpha < 1) curTile.set({alpha:0}); //hide brick digging
-				break;	
-			case SOLID_T: //Solid Brick		
-				curTile = getThemeBitmap("solid");		
-				break;	
-			case LADDR_T: //Ladder
-				curTile = getThemeBitmap("ladder");
-				break;	
-			case BAR_T: //Line of rope
-				curTile = getThemeBitmap("rope");
-				break;	
-			case TRAP_T: //False brick
-				curTile = getThemeBitmap("brick");
-				if(map[x][y].bitmap.alpha < 1) curTile.set({alpha:0.5}); //show trap tile
-				break;
-			case HLADR_T: //Ladder appears at end of level
-				curTile = getThemeBitmap("ladder");
-				curTile.set({alpha:0});	//hide the laddr
-				break;
-			case GOLD_T: //Gold
-				curTile = getThemeBitmap("gold");
-				break;	
+
+	for (var x = 0; x < NO_OF_TILES_X; x++) {
+		for (var y = 0; y < NO_OF_TILES_Y; y++) {
+			switch (map[x][y].base) {
+				default:
+				case EMPTY_T: //empty
+					continue;
+				case BLOCK_T: //Normal Brick
+					curTile = getThemeBitmap("brick");
+					if (map[x][y].bitmap.alpha < 1) curTile.set({ alpha: 0 }); //hide brick digging
+					break;
+				case SOLID_T: //Solid Brick
+					curTile = getThemeBitmap("solid");
+					break;
+				case LADDR_T: //Ladder
+					curTile = getThemeBitmap("ladder");
+					break;
+				case BAR_T: //Line of rope
+					curTile = getThemeBitmap("rope");
+					break;
+				case TRAP_T: //False brick
+					curTile = getThemeBitmap("brick");
+					if (map[x][y].bitmap.alpha < 1) curTile.set({ alpha: 0.5 }); //show trap tile
+					break;
+				case HLADR_T: //Ladder appears at end of level
+					curTile = getThemeBitmap("ladder");
+					curTile.set({ alpha: 0 }); //hide the laddr
+					break;
+				case GOLD_T: //Gold
+					curTile = getThemeBitmap("gold");
+					break;
 			}
 			mainStage.removeChild(map[x][y].bitmap); //remove old
-			curTile.setTransform(x * tileWScale, y * tileHScale, tileScale, tileScale); //x,y, scaleX, scaleY 
-			mainStage.addChild(curTile);  //add new
-			map[x][y].bitmap = curTile;   //replace bitmap 
+			curTile.setTransform(x * tileWScale, y * tileHScale, tileScale, tileScale); //x,y, scaleX, scaleY
+			mainStage.addChild(curTile); //add new
+			map[x][y].bitmap = curTile; //replace bitmap
 		}
 	}
 }
 
-function clearGround()
-{
-	for(var i = 0; i < groundTile.length; i++) 
-		mainStage.removeChild(groundTile[i]);
+function clearGround() {
+	for (var i = 0; i < groundTile.length; i++) mainStage.removeChild(groundTile[i]);
 }
 
-function clearInfo()
-{
+function clearInfo() {
 	var i;
 
-	if(playMode == PLAY_CLASSIC || playMode == PLAY_AUTO || playMode == PLAY_DEMO) {
-		for(i = 0; i < scoreTxt.length; i++) mainStage.removeChild(scoreTxt[i]);
-		for(i = 0; i < scoreTile.length; i++) mainStage.removeChild(scoreTile[i]);
+	if (playMode == PLAY_CLASSIC || playMode == PLAY_AUTO || playMode == PLAY_DEMO) {
+		for (i = 0; i < scoreTxt.length; i++) mainStage.removeChild(scoreTxt[i]);
+		for (i = 0; i < scoreTile.length; i++) mainStage.removeChild(scoreTile[i]);
 
-		if(playMode == PLAY_DEMO) {
-			for(i = 0; i < demoTxt.length; i++) mainStage.removeChild(demoTxt[i]);
+		if (playMode == PLAY_DEMO) {
+			for (i = 0; i < demoTxt.length; i++) mainStage.removeChild(demoTxt[i]);
 		} else {
-			for(i = 0; i < lifeTxt.length; i++) mainStage.removeChild(lifeTxt[i]);
-			for(i = 0; i < lifeTile.length; i++) mainStage.removeChild(lifeTile[i]);
+			for (i = 0; i < lifeTxt.length; i++) mainStage.removeChild(lifeTxt[i]);
+			for (i = 0; i < lifeTile.length; i++) mainStage.removeChild(lifeTile[i]);
 		}
-	} else { //PLAY_MODERN, PLAY_DEMO_ONCE
-		for(i = 0; i < goldTxt.length; i++) mainStage.removeChild(goldTxt[i]);
-		for(i = 0; i < goldTile.length; i++) mainStage.removeChild(goldTile[i]);
+	} else {
+		//PLAY_MODERN, PLAY_DEMO_ONCE
+		for (i = 0; i < goldTxt.length; i++) mainStage.removeChild(goldTxt[i]);
+		for (i = 0; i < goldTile.length; i++) mainStage.removeChild(goldTile[i]);
 
-		for(i = 0; i < guardTxt.length; i++) mainStage.removeChild(guardTxt[i]);
-		for(i = 0; i < guardTile.length; i++) mainStage.removeChild(guardTile[i]);
+		for (i = 0; i < guardTxt.length; i++) mainStage.removeChild(guardTxt[i]);
+		for (i = 0; i < guardTile.length; i++) mainStage.removeChild(guardTile[i]);
 
-		for(i = 0; i < timeTxt.length; i++) mainStage.removeChild(timeTxt[i]);
-		for(i = 0; i < timeTile.length; i++) mainStage.removeChild(timeTile[i]);
+		for (i = 0; i < timeTxt.length; i++) mainStage.removeChild(timeTxt[i]);
+		for (i = 0; i < timeTile.length; i++) mainStage.removeChild(timeTile[i]);
 	}
-	
-	for(i = 0; i < levelTxt.length; i++) mainStage.removeChild(levelTxt[i]);
-	for(i = 0; i < levelTile.length; i++) mainStage.removeChild(levelTile[i]);	
+
+	for (i = 0; i < levelTxt.length; i++) mainStage.removeChild(levelTxt[i]);
+	for (i = 0; i < levelTile.length; i++) mainStage.removeChild(levelTile[i]);
 }
 
 //======================================

@@ -435,6 +435,7 @@ function customGameFinishCallback(selectMode) {
 			// Reset game state
 			playMode = PLAY_NONE;
 			playData = 1;
+
 			// Clear URL level data
 			setStorage(STORAGE_URL_LEVEL, null);
 			// Show cover page
@@ -442,9 +443,30 @@ function customGameFinishCallback(selectMode) {
 			// Show game version menu
 			gameVersionMenu(null, null);
 			break;
-		case 2: //new level
-			incLevel(1, 0);
-			gameState = GAME_NEW_LEVEL;
+		case 2: //switch to edit mode
+			// Get the URL level data before clearing it
+			const urlLevel = getStorage(STORAGE_URL_LEVEL);
+
+			// Save URL level as a custom level if it exists
+			if (urlLevel) {
+				// Save as a new custom level
+				addEditLevel(urlLevel);
+			}
+
+			// Set up for edit mode
+			playMode = PLAY_EDIT;
+			playData = PLAY_DATA_USERDEF;
+
+			// Clear URL level data
+			setStorage(STORAGE_URL_LEVEL, null);
+
+			// Start edit mode
+			startEditMode();
+
+			// Trigger custom levels selection
+			setTimeout(function () {
+				selectIconObj.startSelectMenu();
+			}, 100);
 			break;
 		default:
 			debug("design error !");
