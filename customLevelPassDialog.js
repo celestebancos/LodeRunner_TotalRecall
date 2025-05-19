@@ -447,10 +447,21 @@ function customGameFinishCallback(selectMode) {
 			// Get the URL level data before clearing it
 			const urlLevel = getStorage(STORAGE_URL_LEVEL);
 
-			// Save URL level as a custom level if it exists
+			// Save URL level as a custom level if it exists and isn't a duplicate
 			if (urlLevel) {
-				// Save as a new custom level
-				addEditLevel(urlLevel);
+				// Check if this level already exists in custom levels
+				let isDuplicate = false;
+				for (let i = 0; i < editLevels; i++) {
+					if (compareWithExist(editLevelData[i], urlLevel) === 0) {
+						isDuplicate = true;
+						break;
+					}
+				}
+
+				// Only save if not a duplicate
+				if (!isDuplicate) {
+					addEditLevel(urlLevel);
+				}
 			}
 
 			// Set up for edit mode
